@@ -1,0 +1,105 @@
+# Ignore macOS system files
+.DS_Store
+
+# Ignore environment variables file
+.env
+
+# Ignore Gradle files
+.gradle/
+**/.gradle/
+
+# Ignore Gradle build outputs
+**/build/
+
+# Ignore IntelliJ IDEA files
+.idea/
+**/.idea/
+
+# Ignore Gradle wrapper files (except for the wrapper itself)
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Ignore logs
+logs/
+**/logs/
+
+# Ignore Python virtual environment files
+venv/
+env/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+
+# Ignore Node.js files
+node_modules/
+npm-debug.log
+
+# Ignore other IDE-specific files
+*.iml
+*.ipr
+*.iws
+
+# Ignore VCS metadata
+**/.vscode/
+**/.history/
+**/.vs/
+**/.suo
+**/.ntvs*
+**/.njsproj
+**/.sln
+**/.sw*
+
+# Ignore compiled files
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.a
+*.lib
+*.out
+*.app
+
+# Ignore local development files
+*.local
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# Ignore dependency directories
+**/vendor/
+**/bower_components/
+**/jspm_packages/
+**/node_modules/
+
+# Ignore system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Ignore user-specific files
+*.user
+*.suo
+*.userprefs
+*.sublime-workspace
+*.sublime-project
+
+# Ignore other files
+*.swp
+*.swo
+*.log
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+*.rej
+*.zip
+*.tar.gz
+*.rar
+*.7z
