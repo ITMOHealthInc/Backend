@@ -63,7 +63,7 @@ curl -X POST http://localhost/activity/set-steps \
 
 | Поле   | Значение  | Описание               |
 |--------|-----------|------------------------|
-| status | string    | Статус операции ("success") |
+| status | success    | Данные обновлены |
 
 **Пример успешного ответа:**
 ```json
