@@ -82,6 +82,7 @@ curl -X POST http://localhost/activity/set-steps \
 - `400 Bad Request` - Не удалось проверить заголовок `X-User-ID` или неверный формат данных
 - `500 Internal Server Error` - Ошибка работы сервиса
 
+---
 
 ### 3. Обновление цели на сервере
 
@@ -124,7 +125,7 @@ curl -X POST http://localhost/activity/set-steps \
 - `400 Bad Request` - Не удалось проверить заголовок `X-User-ID` или неверный формат данных
 - `500 Internal Server Error` - Ошибка работы сервиса
 
-
+---
 
 ### 4. Обновление цели на сервере
 
