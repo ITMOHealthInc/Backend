@@ -25,24 +25,16 @@ fun Application.configureRouting() {
     }
 
     routing {
-        get("/") {
-            val username = call.request.headers["X-User-ID"] ?: run {
-                call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
-                return@get
-            }
-            call.respond(HttpStatusCode.OK, username)
-        }
         get("/steps") {
-
             val username = call.request.headers["X-User-ID"] ?: run {
                 call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
                 return@get
             }
             try {
-                val steps = stepsService.getSteps(username)
-                call.respond(HttpStatusCode.OK, mapOf("steps" to steps))
+                val todaySteps = stepsService.getTodaySteps(username)
+                call.respond(HttpStatusCode.OK, todaySteps)
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, ErrorResponse(e.message ?: "Unknown error"))
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to get today steps: ${e.message}"))
             }
         }
 
@@ -54,10 +46,48 @@ fun Application.configureRouting() {
             val request = call.receive<SetStepsRequest>()
 
             try {
-                stepsService.setSteps(username, request.steps)
-                call.respond(HttpStatusCode.OK, mapOf("status" to "success"))
+                val todaySteps = stepsService.setSteps(username, request.steps)
+                call.respond(HttpStatusCode.OK, todaySteps)
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, ErrorResponse(e.message ?: "Unknown error"))
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to set steps: ${e.message}"))
+            }
+        }
+
+        post("/update-goal") {
+            val username = call.request.headers["X-User-ID"] ?: run {
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
+                return@post
+            }
+            val request = call.receive<UpdateGoalRequest>()
+
+            try {
+                val todaySteps = stepsService.updateGoal(username, request.goal)
+                call.respond(HttpStatusCode.OK, todaySteps)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to update goal: ${e.message}"))
+            }
+        }
+
+        get("/month-steps") {
+            val username = call.request.headers["X-User-ID"] ?: run {
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
+                return@get
+            }
+
+            val month = call.request.queryParameters["month"]?.toIntOrNull() ?: run {
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing or invalid 'month' query parameter"))
+                return@get
+            }
+            val year = call.request.queryParameters["year"]?.toIntOrNull() ?: run {
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing or invalid 'year' query parameter"))
+                return@get
+            }
+
+            try {
+                val monthSteps = stepsService.getMonthSteps(username, month, year)
+                call.respond(HttpStatusCode.OK, monthSteps)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to get month steps: ${e.message}"))
             }
         }
     }
