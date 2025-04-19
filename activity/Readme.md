@@ -156,7 +156,7 @@ curl -X POST http://localhost/activity/set-steps \
 | totalSteps    | integer           | Общее количество шагов за месяц|
 | averageSteps  | double            | Среднее количество шагов в день |
 | maxSteps      | integer           | Максимальное количество шагов за день |
-| days          | List<DaySteps>    | Детали по дням |
+| days          | DaySteps[]   | Детали по дням |
 
 DaySteps:
 
