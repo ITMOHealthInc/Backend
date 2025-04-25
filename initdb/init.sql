@@ -11,3 +11,32 @@ CREATE TABLE IF NOT EXISTS user_steps (
     goal INT NOT NULL DEFAULT 10000,
     date DATE NOT NULL DEFAULT CURRENT_DATE
 );
+
+CREATE TABLE IF NOT EXISTS products(
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      affiliation TEXT NOT NULL,
+      water DOUBLE PRECISION NOT NULL,
+      mass DOUBLE PRECISION NOT NULL,
+
+      fiber DOUBLE PRECISION NOT NULL,
+      sugar DOUBLE PRECISION NOT NULL,
+      added_sugar DOUBLE PRECISION,
+
+      saturated_fat DOUBLE PRECISION NOT NULL,
+      polyunsaturated_fat DOUBLE PRECISION,
+
+      cholesterol DOUBLE PRECISION,
+      salt DOUBLE PRECISION NOT NULL,
+      alcohol DOUBLE PRECISION,
+
+      vitamin_b7 DOUBLE PRECISION,
+      vitamin_c DOUBLE PRECISION,
+      vitamin_d DOUBLE PRECISION,
+      vitamin_e DOUBLE PRECISION,
+      vitamin_k DOUBLE PRECISION,
+
+      calcium DOUBLE PRECISION,
+      iron DOUBLE PRECISION,
+      zinc DOUBLE PRECISION
+);
