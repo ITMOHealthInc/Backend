@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) PRIMARY KEY,
     password VARCHAR(100) NOT NULL
 );
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS user_steps (
 );
 
 CREATE TABLE IF NOT EXISTS products(
-      id TEXT PRIMARY KEY,
+      id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       affiliation TEXT NOT NULL,
       water DOUBLE PRECISION NOT NULL,
@@ -39,4 +39,20 @@ CREATE TABLE IF NOT EXISTS products(
       calcium DOUBLE PRECISION,
       iron DOUBLE PRECISION,
       zinc DOUBLE PRECISION
+);
+
+CREATE TABLE IF NOT EXISTS user_products(
+    username VARCHAR(256),
+    product_id INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS recipe(
+    id INTEGER,
+    name VARCHAR(256),
+    username VARCHAR(256)
+);
+
+CREATE TABLE IF NOT EXISTS recipe_products(
+    recipe_id INTEGER,
+    product_id INTEGER
 );

@@ -32,8 +32,8 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
                     return@post
                 }
-                productService.createProduct(productDTO.toEntity(), username)
-                call.respond(HttpStatusCode.Created)
+                val createdProduct = productService.createProduct(productDTO.toEntity(), username)
+                call.respond(HttpStatusCode.Created, createdProduct.toDTO())
             } catch (e: IllegalArgumentException) {
                 call.respond(HttpStatusCode.BadRequest, ErrorResponse(e.message ?: "Invalid product data"))
             } catch (e: Exception) {
@@ -102,16 +102,12 @@ fun Application.configureRouting() {
                     ?: return@put call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid product ID"))
 
                 val productDTO = call.receive<ProductDTO>()
-                if (productDTO.id != id) {
-                    return@put call.respond(HttpStatusCode.BadRequest, ErrorResponse("Product ID mismatch"))
-                }
+                val product = productDTO.toEntity().copy(id = id)
 
-                val success = productService.updateProduct(productDTO.toEntity())
-                if (success) {
-                    call.respond(HttpStatusCode.OK)
-                } else {
-                    call.respond(HttpStatusCode.NotFound, ErrorResponse("Product not found"))
-                }
+                val updatedProduct = productService.updateProduct(product)
+                    ?: return@put call.respond(HttpStatusCode.NotFound, ErrorResponse("Product not found"))
+
+                call.respond(HttpStatusCode.OK, updatedProduct.toDTO())
             } catch (e: IllegalArgumentException) {
                 call.respond(HttpStatusCode.BadRequest, ErrorResponse(e.message ?: "Invalid product data"))
             } catch (e: NumberFormatException) {

@@ -5,7 +5,7 @@ import org.example.enums.Affiliation
 
 @Serializable
 data class ProductDTO(
-    val id: Long,
+    val id: Long? = null,
     val name: String,
     val affiliation: Affiliation,
     val water: Double,
