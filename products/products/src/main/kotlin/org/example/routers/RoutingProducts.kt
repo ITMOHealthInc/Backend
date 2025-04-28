@@ -7,6 +7,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.serialization.kotlinx.json.*
+import org.example.dto.ErrorResponse
 import org.example.dto.ProductDTO
 import org.example.mappers.toDTO
 import org.example.mappers.toEntity
@@ -14,7 +15,7 @@ import org.example.repository.ProductRepository
 import org.example.repository.UserProductRepository
 import org.example.service.ProductService
 
-fun Application.configureRouting() {
+fun Application.configureProductsRouting() {
     val productRepository = ProductRepository()
     val userProductRepository = UserProductRepository()
     val productService = ProductService(productRepository, userProductRepository)
@@ -140,7 +141,4 @@ fun Application.configureRouting() {
             }
         }
     }
-}
-
-@kotlinx.serialization.Serializable
-data class ErrorResponse(val message: String) 
+} 

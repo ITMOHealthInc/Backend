@@ -3,7 +3,8 @@ package org.example
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import org.example.routers.configureRouting
+import org.example.routers.configureProductsRouting
+import org.example.routers.configureRecipeRouting
 
 fun main() {
     embeddedServer(Netty, port = 5022, host = "0.0.0.0", module = Application::module)
@@ -12,5 +13,6 @@ fun main() {
 
 @Suppress("unused")
 fun Application.module() {
-    configureRouting()
+    configureProductsRouting()
+    configureRecipeRouting()
 }

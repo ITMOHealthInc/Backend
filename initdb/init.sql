@@ -16,18 +16,20 @@ CREATE TABLE IF NOT EXISTS products(
       id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       affiliation TEXT NOT NULL,
-      water DOUBLE PRECISION NOT NULL,
-      mass DOUBLE PRECISION NOT NULL,
+      water DOUBLE PRECISION,
+      mass DOUBLE PRECISION,
 
-      fiber DOUBLE PRECISION NOT NULL,
-      sugar DOUBLE PRECISION NOT NULL,
+      proteins DOUBLE PRECISION,
+
+      fiber DOUBLE PRECISION,
+      sugar DOUBLE PRECISION,
       added_sugar DOUBLE PRECISION,
 
-      saturated_fat DOUBLE PRECISION NOT NULL,
+      saturated_fat DOUBLE PRECISION,
       polyunsaturated_fat DOUBLE PRECISION,
 
       cholesterol DOUBLE PRECISION,
-      salt DOUBLE PRECISION NOT NULL,
+      salt DOUBLE PRECISION,
       alcohol DOUBLE PRECISION,
 
       vitamin_b7 DOUBLE PRECISION,
@@ -41,18 +43,39 @@ CREATE TABLE IF NOT EXISTS products(
       zinc DOUBLE PRECISION
 );
 
-CREATE TABLE IF NOT EXISTS user_products(
-    username VARCHAR(256),
-    product_id INTEGER
+CREATE TABLE user_products (
+    username VARCHAR(255) NOT NULL,
+    product_id BIGINT NOT NULL,
+    PRIMARY KEY (username, product_id),
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+)
+
+CREATE TABLE recipes (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS recipe(
-    id INTEGER,
-    name VARCHAR(256),
-    username VARCHAR(256)
+CREATE TABLE recipe_products (
+    recipe_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    PRIMARY KEY (recipe_id, product_id),
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS recipe_products(
-    recipe_id INTEGER,
-    product_id INTEGER
+CREATE TABLE meals (
+    id BIGSERIAL PRIMARY KEY,
+    type VARCHAR(100) NOT NULL,
+    added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE types_meals_content (
+    meal_id BIGING NOT NULL,
+    content_id BIGINT NOT NULL,
+    type_content VARCHAR(100) NOT NULL,
+    PRIMARY KEY (recipe_id, product_id),
+    FOREIGN KEY (meal_id) REFERENCES meals(id) ON DELETE CASCADE
 );
