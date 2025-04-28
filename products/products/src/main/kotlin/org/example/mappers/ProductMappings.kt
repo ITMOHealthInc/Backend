@@ -51,6 +51,7 @@ fun Product.toDTO(): ProductDTO {
         vitaminK = vitaminK,
         calcium = calcium,
         iron = iron,
-        zinc = zinc
+        zinc = zinc,
+        kbzhu = calculateKbzhu()
     )
 }

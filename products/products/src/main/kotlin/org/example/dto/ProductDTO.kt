@@ -8,18 +8,20 @@ data class ProductDTO(
     val id: Long? = null,
     val name: String,
     val affiliation: Affiliation,
-    val water: Double,
-    val mass: Double,
+    val water: Double? = null,
+    val mass: Double? = null,
 
-    val fiber: Double,
-    val sugar: Double,
+    val proteins: Double? = null,
+
+    val fiber: Double? = null,
+    val sugar: Double? = null,
     val addedSugar: Double? = null,
 
-    val saturatedFat: Double,
+    val saturatedFat: Double? = null,
     val polyunsaturatedFat: Double? = null,
 
     val cholesterol: Double? = null,
-    val salt: Double,
+    val salt: Double? = null,
     val alcohol: Double? = null,
 
     val vitaminB7: Double? = null,
@@ -30,5 +32,7 @@ data class ProductDTO(
 
     val calcium: Double? = null,
     val iron: Double? = null,
-    val zinc: Double? = null
+    val zinc: Double? = null,
+    
+    val kbzhu: Kbzhu? = null
 )

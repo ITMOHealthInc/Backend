@@ -12,8 +12,8 @@ class ProductService(
 ) {
 
     fun createProduct(product: Product, username: String? = null): Product {
-        require(product.mass > 0) { "Масса продукта должна быть больше 0" }
-        require(product.water >= 0) { "Содержание воды не может быть отрицательным" }
+        require(product.mass != null && product.mass > 0) { "Масса продукта должна быть больше 0" }
+        require(product.water != null && product.water >= 0) { "Содержание воды не может быть отрицательным" }
         
         val createdProduct = repository.insert(product)
         
@@ -47,8 +47,8 @@ class ProductService(
 
     fun updateProduct(product: Product): Product? {
         require(product.id != null) { "Product ID must not be null for update" }
-        require(product.mass > 0) { "Масса продукта должна быть больше 0" }
-        require(product.water >= 0) { "Содержание воды не может быть отрицательным" }
+        require(product.mass != null && product.mass > 0) { "Масса продукта должна быть больше 0" }
+        require(product.water != null && product.water >= 0) { "Содержание воды не может быть отрицательным" }
         
         val existingProduct = repository.findById(product.id)
         
