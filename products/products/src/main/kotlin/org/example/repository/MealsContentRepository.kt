@@ -57,7 +57,7 @@ class MealsContentRepository {
 
     private fun ResultSet.toMealContent(): MealsContent {
         return MealsContent(
-            mealId = getLong("history_meal_id"),
+            mealId = getLong("meal_id"),
             contentId = getLong("content_id"),
             typeContent = TypesMealsContent.valueOf(getString("type_content"))
         )

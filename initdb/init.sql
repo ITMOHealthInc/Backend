@@ -78,6 +78,5 @@ CREATE TABLE IF NOT EXISTS meals_content (
     meal_id BIGINT NOT NULL,
     content_id BIGINT NOT NULL,
     type_content VARCHAR(100) NOT NULL,
-    PRIMARY KEY (meal_id, content_id),
     FOREIGN KEY (meal_id) REFERENCES meals(id) ON DELETE CASCADE
 );
