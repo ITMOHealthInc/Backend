@@ -49,11 +49,17 @@ class RecipeService(
             recipeProductRepository.insert(RecipeProduct(recipeId, productId))
         }
 
-        return getRecipe(recipeId)!!
+        return getRecipe(recipeId, username)!!
     }
 
-    fun getRecipe(id: Long): RecipeDTO? {
+    fun getRecipe(id: Long, username: String): RecipeDTO? {
         val recipe = recipeRepository.findById(id) ?: return null
+        
+        // Check if the recipe belongs to the user
+        if (recipe.username != username) {
+            throw SecurityException("You don't have permission to access this recipe")
+        }
+        
         val recipeProducts = recipeProductRepository.findByRecipeId(id)
         val products = recipeProducts.mapNotNull { recipeProduct ->
             productRepository.findById(recipeProduct.productId)
@@ -71,13 +77,25 @@ class RecipeService(
         }
     }
 
-    fun deleteRecipe(id: Long): Boolean {
+    fun deleteRecipe(id: Long, username: String): Boolean {
+        val recipe = recipeRepository.findById(id) ?: return false
+        
+        // Check if the recipe belongs to the user
+        if (recipe.username != username) {
+            throw SecurityException("You don't have permission to delete this recipe")
+        }
+        
         recipeProductRepository.deleteByRecipeId(id)
         return recipeRepository.deleteById(id)
     }
 
     fun updateRecipe(recipeRequest: RecipeRequestDTO, id: Long, username: String): RecipeDTO? {
         val existingRecipe = recipeRepository.findById(id) ?: return null
+        
+        // Check if the recipe belongs to the user
+        if (existingRecipe.username != username) {
+            throw SecurityException("You don't have permission to update this recipe")
+        }
         
         // Validate products
         recipeRequest.productIds.forEach { productId ->
@@ -108,6 +126,6 @@ class RecipeService(
             recipeProductRepository.insert(RecipeProduct(recipe.id!!, productId))
         }
 
-        return getRecipe(recipe.id!!)
+        return getRecipe(recipe.id!!, username)
     }
 } 

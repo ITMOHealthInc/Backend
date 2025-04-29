@@ -63,13 +63,8 @@ fun Application.configureRecipeRouting() {
                 val id = call.parameters["id"]?.toLongOrNull()
                     ?: return@get call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid recipe ID"))
 
-                val recipe = recipeService.getRecipe(id)
+                val recipe = recipeService.getRecipe(id, username)
                     ?: return@get call.respond(HttpStatusCode.NotFound, ErrorResponse("Recipe not found"))
-
-                // Check if the recipe belongs to the user
-                if (recipe.username != username) {
-                    return@get call.respond(HttpStatusCode.Forbidden, ErrorResponse("You don't have access to this recipe"))
-                }
 
                 call.respond(HttpStatusCode.OK, recipe)
             } catch (e: NumberFormatException) {
@@ -92,7 +87,7 @@ fun Application.configureRecipeRouting() {
                 val recipeRequest = call.receive<RecipeRequestDTO>()
                 
                 // Check if the recipe exists and belongs to the user
-                val existingRecipe = recipeService.getRecipe(id)
+                val existingRecipe = recipeService.getRecipe(id, username)
                     ?: return@put call.respond(HttpStatusCode.NotFound, ErrorResponse("Recipe not found"))
                 
                 if (existingRecipe.username != username) {
@@ -123,14 +118,14 @@ fun Application.configureRecipeRouting() {
                     ?: return@delete call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid recipe ID"))
 
                 // Check if the recipe exists and belongs to the user
-                val existingRecipe = recipeService.getRecipe(id)
+                val existingRecipe = recipeService.getRecipe(id, username)
                     ?: return@delete call.respond(HttpStatusCode.NotFound, ErrorResponse("Recipe not found"))
                 
                 if (existingRecipe.username != username) {
                     return@delete call.respond(HttpStatusCode.Forbidden, ErrorResponse("You don't have access to this recipe"))
                 }
 
-                val success = recipeService.deleteRecipe(id)
+                val success = recipeService.deleteRecipe(id, username)
                 if (success) {
                     call.respond(HttpStatusCode.OK)
                 } else {
