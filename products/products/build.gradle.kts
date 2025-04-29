@@ -44,6 +44,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("org.postgresql:postgresql:42.5.4")
     implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
