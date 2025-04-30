@@ -12,19 +12,24 @@ import org.example.repository.ProductRepository
 import org.example.repository.RecipeProductRepository
 import org.example.repository.RecipeRepository
 import org.example.repository.UserProductRepository
+import org.example.repository.UserRepository
 
 class RecipeService(
     private val recipeRepository: RecipeRepository,
     private val recipeProductRepository: RecipeProductRepository,
     private val productRepository: ProductRepository,
-    private val userProductRepository: UserProductRepository
+    private val userProductRepository: UserProductRepository,
+    private val userRepository: UserRepository = UserRepository()
 ) {
     fun createRecipe(recipeRequest: RecipeRequestDTO, username: String): RecipeDTO {
+        if (!userRepository.exists(username)) {
+            throw IllegalArgumentException("User with username $username does not exist")
+        }
+
         // Validate products
         recipeRequest.productIds.forEach { productId ->
             val product = productRepository.findById(productId)
                 ?: throw IllegalArgumentException("Product with id $productId not found")
-            println(product)
 
             // Check if the product is either:
             // 1. A regional product (not USER)
@@ -40,9 +45,7 @@ class RecipeService(
         }
 
         val recipe = recipeRequest.toEntity(username)
-        println(recipe)
         val recipeId = recipeRepository.insert(recipe)
-        println(recipeId)
 
         // Now that we have the recipe ID, we can insert the recipe products
         recipeRequest.productIds.forEach { productId ->
@@ -53,6 +56,10 @@ class RecipeService(
     }
 
     fun getRecipe(id: Long, username: String): RecipeDTO? {
+        if (!userRepository.exists(username)) {
+            throw IllegalArgumentException("User with username $username does not exist")
+        }
+
         val recipe = recipeRepository.findById(id) ?: return null
         
         // Check if the recipe belongs to the user
@@ -62,22 +69,46 @@ class RecipeService(
         
         val recipeProducts = recipeProductRepository.findByRecipeId(id)
         val products = recipeProducts.mapNotNull { recipeProduct ->
-            productRepository.findById(recipeProduct.productId)
+            val product = productRepository.findById(recipeProduct.productId)
+            if (product?.affiliation == Affiliation.USER) {
+                val productOwner = userProductRepository.findByProductId(product.id!!)
+                    ?: throw SecurityException("Product ${product.id} is marked as USER but has no owner")
+                if (productOwner != username) {
+                    throw SecurityException("You don't have permission to access product ${product.id} in this recipe")
+                }
+            }
+            product
         }
         return recipe.toDTO(products)
     }
 
     fun getRecipesByUsername(username: String): List<RecipeDTO> {
+        if (!userRepository.exists(username)) {
+            throw IllegalArgumentException("User with username $username does not exist")
+        }
+
         return recipeRepository.findByUsername(username).map { recipe ->
             val recipeProducts = recipeProductRepository.findByRecipeId(recipe.id!!)
             val products = recipeProducts.mapNotNull { recipeProduct ->
-                productRepository.findById(recipeProduct.productId)
+                val product = productRepository.findById(recipeProduct.productId)
+                if (product?.affiliation == Affiliation.USER) {
+                    val productOwner = userProductRepository.findByProductId(product.id!!)
+                        ?: throw SecurityException("Product ${product.id} is marked as USER but has no owner")
+                    if (productOwner != username) {
+                        throw SecurityException("You don't have permission to access product ${product.id} in this recipe")
+                    }
+                }
+                product
             }
             recipe.toDTO(products)
         }
     }
 
     fun deleteRecipe(id: Long, username: String): Boolean {
+        if (!userRepository.exists(username)) {
+            throw IllegalArgumentException("User with username $username does not exist")
+        }
+
         val recipe = recipeRepository.findById(id) ?: return false
         
         // Check if the recipe belongs to the user
@@ -85,11 +116,28 @@ class RecipeService(
             throw SecurityException("You don't have permission to delete this recipe")
         }
         
+        // Check if all products in the recipe are accessible
+        val recipeProducts = recipeProductRepository.findByRecipeId(id)
+        recipeProducts.forEach { recipeProduct ->
+            val product = productRepository.findById(recipeProduct.productId)
+            if (product?.affiliation == Affiliation.USER) {
+                val productOwner = userProductRepository.findByProductId(product.id!!)
+                    ?: throw SecurityException("Product ${product.id} is marked as USER but has no owner")
+                if (productOwner != username) {
+                    throw SecurityException("You don't have permission to access product ${product.id} in this recipe")
+                }
+            }
+        }
+        
         recipeProductRepository.deleteByRecipeId(id)
         return recipeRepository.deleteById(id)
     }
 
     fun updateRecipe(recipeRequest: RecipeRequestDTO, id: Long, username: String): RecipeDTO? {
+        if (!userRepository.exists(username)) {
+            throw IllegalArgumentException("User with username $username does not exist")
+        }
+
         val existingRecipe = recipeRepository.findById(id) ?: return null
         
         // Check if the recipe belongs to the user

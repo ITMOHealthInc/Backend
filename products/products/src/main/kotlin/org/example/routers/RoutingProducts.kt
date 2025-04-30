@@ -81,7 +81,7 @@ fun Application.configureProductsRouting() {
                 val id = call.parameters["id"]?.toLongOrNull()
                     ?: return@get call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid product ID"))
 
-                val product = productService.getProduct(id)
+                val product = productService.getProduct(id, username)
                     ?: return@get call.respond(HttpStatusCode.NotFound, ErrorResponse("Product not found"))
 
                 call.respond(HttpStatusCode.OK, product.toDTO())
@@ -105,7 +105,7 @@ fun Application.configureProductsRouting() {
                 val productDTO = call.receive<ProductDTO>()
                 val product = productDTO.toEntity().copy(id = id)
 
-                val updatedProduct = productService.updateProduct(product)
+                val updatedProduct = productService.updateProduct(product, username)
                     ?: return@put call.respond(HttpStatusCode.NotFound, ErrorResponse("Product not found"))
 
                 call.respond(HttpStatusCode.OK, updatedProduct.toDTO())
@@ -128,7 +128,7 @@ fun Application.configureProductsRouting() {
                 val id = call.parameters["id"]?.toLongOrNull()
                     ?: return@delete call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid product ID"))
 
-                val success = productService.deleteProduct(id)
+                val success = productService.deleteProduct(id, username)
                 if (success) {
                     call.respond(HttpStatusCode.OK)
                 } else {

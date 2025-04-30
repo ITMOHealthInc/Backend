@@ -8,6 +8,7 @@ import io.ktor.server.routing.*
 import org.example.dto.ErrorResponse
 import org.example.dto.MealDTO
 import org.example.dto.MealRequestDTO
+import org.example.dto.MealSummaryDTO
 import org.example.service.MealService
 import org.example.repository.MealsRepository
 import org.example.repository.MealsContentRepository
@@ -165,6 +166,35 @@ fun Application.configureMealRouting() {
                 call.respond(HttpStatusCode.Forbidden, ErrorResponse(e.message ?: "Access denied"))
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to delete meal: ${e.message}"))
+            }
+        }
+
+        // Get meal summary (water content and KBZHU)
+        get("/meals/{id}/summary") {
+            try {
+                val username = call.request.headers["X-User-ID"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
+                    return@get
+                }
+                val id = call.parameters["id"]?.toLongOrNull()
+                    ?: return@get call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid meal ID"))
+
+                val summary = mealService.getMealSummary(id, username)
+                    ?: return@get call.respond(HttpStatusCode.NotFound, ErrorResponse("Meal not found"))
+
+                call.respond(HttpStatusCode.OK, summary)
+            } catch (e: NumberFormatException) {
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid meal ID format"))
+            } catch (e: IllegalArgumentException) {
+                if (e.message?.contains("User with username") == true) {
+                    call.respond(HttpStatusCode.NotFound, ErrorResponse(e.message ?: "User not found"))
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, ErrorResponse(e.message ?: "Invalid request"))
+                }
+            } catch (e: SecurityException) {
+                call.respond(HttpStatusCode.Forbidden, ErrorResponse(e.message ?: "Access denied"))
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to retrieve meal summary: ${e.message}"))
             }
         }
     }

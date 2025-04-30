@@ -2,8 +2,10 @@ package org.example.service
 
 import org.example.dto.MealDTO
 import org.example.dto.MealRequestDTO
+import org.example.dto.MealSummaryDTO
 import org.example.dto.ProductDTO
 import org.example.dto.RecipeDTO
+import org.example.dto.Kbzhu
 import org.example.enums.TypesMeals
 import org.example.enums.TypesMealsContent
 import org.example.mappers.toDTO
@@ -205,5 +207,52 @@ class MealService(
         }
 
         return getMeal(id, username)
+    }
+
+    fun getMealSummary(id: Long, username: String): MealSummaryDTO? {
+        // Check if user exists
+        if (!userRepository.exists(username)) {
+            throw IllegalArgumentException("User with username $username does not exist")
+        }
+
+        val meal = mealsRepository.findById(id) ?: return null
+        
+        // Check if the meal belongs to the user
+        if (meal.username != username) {
+            throw SecurityException("You don't have permission to access this meal")
+        }
+        
+        val contents = mealsContentRepository.findByMealId(id)
+        
+        val productIds = contents
+            .filter { it.typeContent == TypesMealsContent.PRODUCT }
+            .map { it.contentId }
+        val recipeIds = contents
+            .filter { it.typeContent == TypesMealsContent.RECIPE }
+            .map { it.contentId }
+        
+        val products = productIds.mapNotNull { productRepository.findById(it) }
+        val recipes = recipeIds.mapNotNull { recipeId ->
+            val recipe = recipeRepository.findById(recipeId) ?: return@mapNotNull null
+            val recipeProductIds = recipeProductRepository.findByRecipeId(recipeId)
+                .map { it.productId }
+            recipeProductIds.mapNotNull { productRepository.findById(it) }
+        }.flatten()
+        
+        // Calculate total water content
+        val totalWater = (products + recipes).sumOf { it.water ?: 0.0 }
+        
+        // Calculate total KBZHU
+        val totalKbzhu = (products + recipes).fold(Kbzhu(0.0, 0.0, 0.0, 0.0)) { acc, product ->
+            val kbzhu = product.calculateKbzhu()
+            Kbzhu(
+                calories = acc.calories + kbzhu.calories,
+                proteins = acc.proteins + kbzhu.proteins,
+                fats = acc.fats + kbzhu.fats,
+                carbohydrates = acc.carbohydrates + kbzhu.carbohydrates
+            )
+        }
+        
+        return MealSummaryDTO(totalWater, totalKbzhu)
     }
 } 
