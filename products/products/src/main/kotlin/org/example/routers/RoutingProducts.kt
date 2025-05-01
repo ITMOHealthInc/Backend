@@ -50,24 +50,10 @@ fun Application.configureProductsRouting() {
                     call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
                     return@get
                 }
-                val products = productService.getAllProducts()
+                val products = productService.getAllProducts(username)
                 call.respond(HttpStatusCode.OK, products.map { it.toDTO() })
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to retrieve products: ${e.message}"))
-            }
-        }
-
-        // Get products by username
-        get("/products/user") {
-            try {
-                val username = call.request.headers["X-User-ID"] ?: run {
-                    call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
-                    return@get
-                }
-                val products = productService.getProductsByUsername(username)
-                call.respond(HttpStatusCode.OK, products.map { it.toDTO() })
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to retrieve user products: ${e.message}"))
             }
         }
 

@@ -19,6 +19,8 @@ import org.example.repository.ProductRepository
 import org.example.repository.RecipeRepository
 import org.example.repository.RecipeProductRepository
 import org.example.repository.UserRepository
+import org.example.repository.UserProductRepository
+import org.example.enums.Affiliation
 import java.time.LocalDateTime
 
 class MealService(
@@ -27,12 +29,42 @@ class MealService(
     private val productRepository: ProductRepository,
     private val recipeRepository: RecipeRepository,
     private val recipeProductRepository: RecipeProductRepository,
-    private val userRepository: UserRepository = UserRepository()
+    private val userRepository: UserRepository,
+    private val userProductRepository: UserProductRepository = UserProductRepository()
 ) {
     fun createMeal(mealRequest: MealRequestDTO, username: String): MealDTO {
         // Check if user exists
         if (!userRepository.exists(username)) {
             throw IllegalArgumentException("User with username $username does not exist")
+        }
+
+        // Validate products access
+        mealRequest.productIds.forEach { productId ->
+            val product = productRepository.findById(productId)
+                ?: throw IllegalArgumentException("Product with id $productId not found")
+            
+            // Check if the product is either:
+            // 1. A general product (not USER)
+            // 2. A user product belonging to the same user
+            if (product.affiliation == Affiliation.USER) {
+                val productOwner = userProductRepository.findByProductId(product.id!!)
+                    ?: throw IllegalArgumentException("Product ${product.id} is marked as USER but has no owner")
+                
+                if (productOwner != username) {
+                    throw IllegalArgumentException("Product ${product.id} belongs to a different user")
+                }
+            }
+        }
+
+        // Validate recipes access
+        mealRequest.recipeIds.forEach { recipeId ->
+            val recipe = recipeRepository.findById(recipeId)
+                ?: throw IllegalArgumentException("Recipe with id $recipeId not found")
+            
+            // Check if the recipe belongs to the user
+            if (recipe.username != username) {
+                throw IllegalArgumentException("Recipe ${recipe.id} belongs to a different user")
+            }
         }
 
         // Create the meal
