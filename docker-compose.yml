@@ -9,6 +9,7 @@ services:
     depends_on:
       - auth
       - activity
+      - user_measurements
       - service1
 
   auth:
@@ -28,6 +29,16 @@ services:
       - .env
     ports:
       - "5013:5013"
+    depends_on:
+      - db
+
+  user_measurements:
+    build: ./user_measurements
+    container_name: user_measurements
+    env_file:
+      - .env
+    ports:
+      - "5014:5014"
     depends_on:
       - db
 
