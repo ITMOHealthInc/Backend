@@ -11,6 +11,9 @@ services:
     depends_on:
       - products
       - auth
+      - activity
+      - user_measurements
+      - service1
 
   products:
     build: ./products
@@ -32,6 +35,26 @@ services:
     depends_on:
       - db
 
+  activity:
+    build: ./activity
+    container_name: activity
+    env_file:
+      - .env
+    ports:
+      - "5013:5013"
+    depends_on:
+      - db
+
+  user_measurements:
+    build: ./user_measurements
+    container_name: user_measurements
+    env_file:
+      - .env
+    ports:
+      - "5014:5014"
+    depends_on:
+      - db
+
   db:
     image: postgres:13
     container_name: db
@@ -42,6 +65,12 @@ services:
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
+
+  service1:
+    build: ./service1
+    container_name: service1
+    expose:
+      - "5001"
 
 volumes:
   postgres_data:
