@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   api-gateway:
     image: nginx:latest
@@ -7,10 +9,21 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
+      - products
       - auth
       - activity
       - user_measurements
       - service1
+
+  products:
+    build: ./products
+    container_name: products
+    env_file:
+      - .env
+    ports:
+      - "5022:5022"
+    depends_on:
+      - db
 
   auth:
     build: ./auth
