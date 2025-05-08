@@ -95,3 +95,14 @@ CREATE TABLE IF NOT EXISTS user_measurements (
     bp_diastolic     INTEGER          NULL,         -- Давление диастолическое (мм рт.ст.)
     measured_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW()  -- дата/время замера
 );
+-- Create the user_goals table
+CREATE TABLE IF NOT EXISTS user_goals (
+                            user_id VARCHAR(50) PRIMARY KEY,           -- user ID as the primary key
+                            goal_type VARCHAR(50) NOT NULL,            -- goal type (e.g., "weight_loss")
+                            activity_level VARCHAR(50) NOT NULL,       -- activity level (e.g., "medium")
+                            weekly_target DOUBLE PRECISION NOT NULL,   -- weekly goal (e.g., 0.5 kg)
+                            calorie_goal INTEGER NOT NULL,             -- daily calorie goal (e.g., 1500)
+                            water_goal INTEGER NOT NULL,               -- daily water intake goal (ml)
+                            steps_goal INTEGER NOT NULL,               -- daily steps goal
+                            bju_goal VARCHAR(50) NOT NULL              -- body composition goal (e.g., "standard")
+);

@@ -72,5 +72,16 @@ services:
     expose:
       - "5001"
 
+  user_goals:
+    build: ./user_goals
+    container_name: user_goals_service
+    env_file:
+      - .env
+    ports:
+      - "5015:5015"
+    depends_on:
+      - db
+
+
 volumes:
   postgres_data:
