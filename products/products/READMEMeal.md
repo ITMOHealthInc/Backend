@@ -457,4 +457,48 @@ curl -X DELETE http://localhost:5022/meals/1 \
 curl -X GET http://localhost:5022/meals/1/summary \
   -H "X-User-ID: username"
 ```
+
+### Получение дневной сводки приемов пищи
+Получает агрегированную информацию о всех приемах пищи за конкретный день, включая суммарное содержание воды и КБЖУ (калории, белки, жиры, углеводы). Возвращает сводку только для приемов пищи, принадлежащих аутентифицированному пользователю.
+
+**Конечная точка:** `GET /meals/daily-summary`
+
+**Параметры запроса:**
+- `date`: Дата в формате ISO (yyyy-MM-dd), например "2024-05-15". Если не указана, используется текущая дата.
+
+**Заголовки:**
+- `X-User-ID`: Имя пользователя аутентифицированного пользователя(только для тестов. В проде этот заголовок проставляется сам из токена)
+
+**Ответ (200 OK):**
+```json
+{
+    "date": "2024-05-15",
+    "totalWater": 5.2,
+    "totalKbzhu": {
+        "calories": 2341.0,
+        "proteins": 82.5,
+        "fats": 73.6,
+        "carbohydrates": 295.8
+    }
+}
+```
+
+**Ответ (404 Not Found):**
+```json
+{
+    "message": "No meals found for this date"
+}
+```
+
+**Пример curl:**
+```bash
+curl -X GET "http://localhost:5022/meals/daily-summary?date=2024-05-15" \
+  -H "X-User-ID: username"
+```
+
+**Пример curl для текущей даты:**
+```bash
+curl -X GET http://localhost:5022/meals/daily-summary \
+  -H "X-User-ID: username"
+```
  
