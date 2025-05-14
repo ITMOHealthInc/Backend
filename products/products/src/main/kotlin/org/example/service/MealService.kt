@@ -3,6 +3,7 @@ package org.example.service
 import org.example.dto.MealDTO
 import org.example.dto.MealRequestDTO
 import org.example.dto.MealSummaryDTO
+import org.example.dto.DailySummaryDTO
 import org.example.dto.ProductDTO
 import org.example.dto.RecipeDTO
 import org.example.dto.Kbzhu
@@ -22,6 +23,8 @@ import org.example.repository.UserRepository
 import org.example.repository.UserProductRepository
 import org.example.enums.Affiliation
 import java.time.LocalDateTime
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 class MealService(
     private val mealsRepository: MealsRepository,
@@ -286,5 +289,59 @@ class MealService(
         }
         
         return MealSummaryDTO(totalWater, totalKbzhu)
+    }
+    
+    fun getDailySummary(date: LocalDate, username: String): DailySummaryDTO? {
+        // Check if user exists
+        if (!userRepository.exists(username)) {
+            throw IllegalArgumentException("User with username $username does not exist")
+        }
+        
+        // Get all meals for the user
+        val allMeals = mealsRepository.findByUsername(username)
+        
+        // Filter meals for the specified date
+        val mealsForDate = allMeals.filter { 
+            val mealDate = it.addedAt.toLocalDate()
+            mealDate.isEqual(date)
+        }
+        
+        // If no meals found for the date, return null or empty summary
+        if (mealsForDate.isEmpty()) {
+            return DailySummaryDTO(
+                date = date.toString(),
+                totalWater = 0.0,
+                totalKbzhu = Kbzhu(0.0, 0.0, 0.0, 0.0)
+            )
+        }
+        
+        // Track totals
+        var totalWater = 0.0
+        var totalCalories = 0.0
+        var totalProteins = 0.0
+        var totalFats = 0.0
+        var totalCarbohydrates = 0.0
+        
+        for (meal in mealsForDate) {
+            val mealSummary = getMealSummary(meal.id, username) ?: continue
+            
+            // Accumulate water and KBZHU
+            totalWater += mealSummary.totalWater
+            totalCalories += mealSummary.totalKbzhu.calories
+            totalProteins += mealSummary.totalKbzhu.proteins
+            totalFats += mealSummary.totalKbzhu.fats
+            totalCarbohydrates += mealSummary.totalKbzhu.carbohydrates
+        }
+        
+        return DailySummaryDTO(
+            date = date.toString(),
+            totalWater = totalWater,
+            totalKbzhu = Kbzhu(
+                calories = totalCalories,
+                proteins = totalProteins,
+                fats = totalFats,
+                carbohydrates = totalCarbohydrates
+            )
+        )
     }
 } 

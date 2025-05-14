@@ -106,3 +106,14 @@ CREATE TABLE IF NOT EXISTS user_goals (
                             steps_goal INTEGER NOT NULL,               -- daily steps goal
                             bju_goal VARCHAR(50) NOT NULL              -- body composition goal (e.g., "standard")
 );
+
+WITH RECURSIVE counter AS (
+    SELECT 1 AS n, 50 AS water_count
+    UNION ALL
+    SELECT n + 1, water_count + 50
+    FROM counter
+    WHERE n < 45
+)
+INSERT INTO products (name, affiliation, water)
+SELECT 'Вода', 'GENERAL', water_count
+FROM counter;

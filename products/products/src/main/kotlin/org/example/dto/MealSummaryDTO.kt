@@ -6,4 +6,11 @@ import kotlinx.serialization.Serializable
 data class MealSummaryDTO(
     val totalWater: Double,
     val totalKbzhu: Kbzhu
+)
+
+@Serializable
+data class DailySummaryDTO(
+    val date: String,
+    val totalWater: Double,
+    val totalKbzhu: Kbzhu
 ) 

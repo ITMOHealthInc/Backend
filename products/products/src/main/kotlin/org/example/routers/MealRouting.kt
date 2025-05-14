@@ -16,6 +16,9 @@ import org.example.repository.ProductRepository
 import org.example.repository.RecipeRepository
 import org.example.repository.RecipeProductRepository
 import org.example.repository.UserRepository
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 fun Application.configureMealRouting() {
     val mealService = MealService(
@@ -195,6 +198,45 @@ fun Application.configureMealRouting() {
                 call.respond(HttpStatusCode.Forbidden, ErrorResponse(e.message ?: "Access denied"))
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to retrieve meal summary: ${e.message}"))
+            }
+        }
+
+        // Get daily meal summary
+        get("/meals/daily-summary") {
+            try {
+                val username = call.request.headers["X-User-ID"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
+                    return@get
+                }
+                
+                // Parse date from query parameter, default to today if not provided
+                val dateStr = call.request.queryParameters["date"]
+                val date = if (dateStr != null) {
+                    try {
+                        LocalDate.parse(dateStr)
+                    } catch (e: DateTimeParseException) {
+                        return@get call.respond(
+                            HttpStatusCode.BadRequest, 
+                            ErrorResponse("Invalid date format. Please use ISO format (yyyy-MM-dd)")
+                        )
+                    }
+                } else {
+                    LocalDate.now()
+                }
+
+                val summary = mealService.getDailySummary(date, username)
+                    ?: return@get call.respond(HttpStatusCode.NotFound, ErrorResponse("No meals found for this date"))
+                call.respond(HttpStatusCode.OK, summary)
+            } catch (e: IllegalArgumentException) {
+                if (e.message?.contains("User with username") == true) {
+                    call.respond(HttpStatusCode.NotFound, ErrorResponse(e.message ?: "User not found"))
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, ErrorResponse(e.message ?: "Invalid request"))
+                }
+            } catch (e: SecurityException) {
+                call.respond(HttpStatusCode.Forbidden, ErrorResponse(e.message ?: "Access denied"))
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to retrieve daily summary: ${e.message}"))
             }
         }
     }
