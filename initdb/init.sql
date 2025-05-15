@@ -1,6 +1,9 @@
 CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) PRIMARY KEY,
-    password VARCHAR(100) NOT NULL
+    password VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    profile_picture_path VARCHAR(255), -- Путь к файлу на сервере
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -83,7 +86,9 @@ CREATE TABLE IF NOT EXISTS meals_content (
 
 CREATE TABLE IF NOT EXISTS user_measurements (
     username         VARCHAR(50)      PRIMARY KEY,
+    gender           VARCHAR(10)      NULL DEFAULT 'no_gender',         -- Пол (male/female)
     weight           NUMERIC(8,2)     NULL,         -- Вес (кг)
+    height           NUMERIC(8,2)     NULL,         -- Рост (см)
     waist            NUMERIC(8,2)     NULL,         -- Талия (см)
     hips             NUMERIC(8,2)     NULL,         -- Бёдра (см)
     chest            NUMERIC(8,2)     NULL,         -- Грудь (см)
@@ -95,6 +100,8 @@ CREATE TABLE IF NOT EXISTS user_measurements (
     bp_diastolic     INTEGER          NULL,         -- Давление диастолическое (мм рт.ст.)
     measured_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW()  -- дата/время замера
 );
+
+
 -- Create the user_goals table
 CREATE TABLE IF NOT EXISTS user_goals (
                             user_id VARCHAR(50) PRIMARY KEY,           -- user ID as the primary key

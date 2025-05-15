@@ -27,16 +27,19 @@
    Информация о пользователях находится в таблице `users` базы данных `mobile`. В таблице пока есть только юзернейм:
 
    ```sql
-   CREATE TABLE users (
-       username VARCHAR(50) PRIMARY KEY,
-       password VARCHAR(100) NOT NULL
-   );
+   CREATE TABLE IF NOT EXISTS users (
+    username VARCHAR(50) PRIMARY KEY,
+    password VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    profile_picture_path VARCHAR(255), -- Путь к файлу на сервере
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   )
    ```
 ## Как обратиться к сервису (в примерах curl для localhost)?
 1. **Зарегистрируйте нового пользователя**  
    Используйте следующий запрос для регистрации нового пользователя:
     ```bash
-   curl -X POST http://localhost/auth/register -H "Content-Type: application/json" -d '{"username": "user", "password": "password"}'
+   curl -X POST http://localhost/auth/register -H "Content-Type: application/json" -d '{"username": "user", "password": "password", "name" : "Ivan"}'
    ```
 2. **Получите JWT токен**   
     После регистрации получите JWT токен с помощью следующего запроса:
