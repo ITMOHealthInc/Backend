@@ -15,7 +15,8 @@ object UserGoalMapper {
             steps_goal = entity.steps_goal,
             proteins_goal = entity.proteins_goal,
             fats_goal = entity.fats_goal,
-            carbohydrates_goal = entity.carbohydrates_goal
+            carbohydrates_goal = entity.carbohydrates_goal,
+            weight_goal = entity.weight_goal
         )
     }
 
@@ -29,7 +30,8 @@ object UserGoalMapper {
             steps_goal = dto.steps_goal,
             proteins_goal = dto.proteins_goal,
             fats_goal = dto.fats_goal,
-            carbohydrates_goal = dto.carbohydrates_goal
+            carbohydrates_goal = dto.carbohydrates_goal,
+            weight_goal = dto.weight_goal
         )
     }
 
@@ -42,7 +44,8 @@ object UserGoalMapper {
             steps_goal = dto.steps_goal,
             proteins_goal = dto.proteins_goal,
             fats_goal = dto.fats_goal,
-            carbohydrates_goal = dto.carbohydrates_goal
+            carbohydrates_goal = dto.carbohydrates_goal,
+            weight_goal = dto.weight_goal
         )
     }
 } 

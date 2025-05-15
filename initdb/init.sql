@@ -121,5 +121,6 @@ CREATE TABLE IF NOT EXISTS user_goals (
     steps_goal INTEGER NOT NULL,
     proteins_goal INTEGER NOT NULL,
     fats_goal INTEGER NOT NULL,
-    carbohydrates_goal INTEGER NOT NULL
+    carbohydrates_goal INTEGER NOT NULL,
+    weight_goal INTEGER NOT NULL
 )

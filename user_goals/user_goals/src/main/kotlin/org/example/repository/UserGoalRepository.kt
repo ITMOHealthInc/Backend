@@ -19,7 +19,8 @@ class UserGoalRepository {
             steps_goal = rs.getInt("steps_goal"),
             proteins_goal = rs.getInt("proteins_goal"),
             fats_goal = rs.getInt("fats_goal"),
-            carbohydrates_goal = rs.getInt("carbohydrates_goal")
+            carbohydrates_goal = rs.getInt("carbohydrates_goal"),
+            weight_goal = rs.getDouble("weight_goal")
         )
     }
 
@@ -28,8 +29,8 @@ class UserGoalRepository {
             val preparedStatement = connection.prepareStatement("""
                 INSERT INTO user_goals (
                     user_id, goal_type, activity_level, calorie_goal, 
-                    water_goal, steps_goal, proteins_goal, fats_goal, carbohydrates_goal
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    water_goal, steps_goal, proteins_goal, fats_goal, carbohydrates_goal, weight_goal
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """)
             
             preparedStatement.setString(1, userGoal.user_id)
@@ -41,6 +42,7 @@ class UserGoalRepository {
             preparedStatement.setInt(7, userGoal.proteins_goal)
             preparedStatement.setInt(8, userGoal.fats_goal)
             preparedStatement.setInt(9, userGoal.carbohydrates_goal)
+            preparedStatement.setDouble(10, userGoal.weight_goal)
             
             preparedStatement.executeUpdate()
         }
@@ -91,7 +93,8 @@ class UserGoalRepository {
                     steps_goal = ?,
                     proteins_goal = ?,
                     fats_goal = ?,
-                    carbohydrates_goal = ?
+                    carbohydrates_goal = ?,
+                    weight_goal = ?
                 WHERE user_id = ?
             """)
             
@@ -103,7 +106,8 @@ class UserGoalRepository {
             preparedStatement.setInt(6, userGoal.proteins_goal)
             preparedStatement.setInt(7, userGoal.fats_goal)
             preparedStatement.setInt(8, userGoal.carbohydrates_goal)
-            preparedStatement.setString(9, userGoal.user_id)
+            preparedStatement.setDouble(9, userGoal.weight_goal)
+            preparedStatement.setString(10, userGoal.user_id)
             
             preparedStatement.executeUpdate()
         }

@@ -7,5 +7,6 @@ import org.example.enums.GoalType
 @Serializable
 data class UserGoalRequestDto(
     val goal_type: GoalType,
-    val activity_level: ActivityLevel
+    val activity_level: ActivityLevel,
+    val weight_goal: Double
 ) 

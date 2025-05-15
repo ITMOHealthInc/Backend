@@ -14,5 +14,6 @@ data class UserGoalDto(
     val steps_goal: Int,
     val proteins_goal: Int,
     val fats_goal: Int,
-    val carbohydrates_goal: Int
+    val carbohydrates_goal: Int,
+    val weight_goal: Double
 ) 

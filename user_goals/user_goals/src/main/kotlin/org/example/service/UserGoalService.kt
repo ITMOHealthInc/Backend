@@ -43,13 +43,33 @@ class UserGoalService(
             user_id = userId,
             goal_type = requestDto.goal_type,
             activity_level = requestDto.activity_level,
-            // Используем GoalCalculator для расчета целей
-            calorie_goal = GoalCalculator.calculateCalorieGoal(requestDto.goal_type, requestDto.activity_level),
-            water_goal = GoalCalculator.calculateWaterGoal(requestDto.activity_level),
-            steps_goal = GoalCalculator.calculateStepsGoal(requestDto.activity_level),
-            proteins_goal = GoalCalculator.calculateProteinsGoal(requestDto.goal_type),
-            fats_goal = GoalCalculator.calculateFatsGoal(requestDto.goal_type),
-            carbohydrates_goal = GoalCalculator.calculateCarbohydratesGoal(requestDto.goal_type)
+            // Используем GoalCalculator для расчета целей с учетом целевого веса
+            calorie_goal = GoalCalculator.calculateCalorieGoal(
+                requestDto.goal_type, 
+                requestDto.activity_level, 
+                requestDto.weight_goal
+            ),
+            water_goal = GoalCalculator.calculateWaterGoal(
+                requestDto.activity_level, 
+                requestDto.weight_goal
+            ),
+            steps_goal = GoalCalculator.calculateStepsGoal(
+                requestDto.activity_level, 
+                requestDto.weight_goal
+            ),
+            proteins_goal = GoalCalculator.calculateProteinsGoal(
+                requestDto.goal_type, 
+                requestDto.weight_goal
+            ),
+            fats_goal = GoalCalculator.calculateFatsGoal(
+                requestDto.goal_type, 
+                requestDto.weight_goal
+            ),
+            carbohydrates_goal = GoalCalculator.calculateCarbohydratesGoal(
+                requestDto.goal_type, 
+                requestDto.weight_goal
+            ),
+            weight_goal = requestDto.weight_goal
         )
         
         val createdUserGoal = userGoalRepository.create(userGoal)
@@ -87,12 +107,32 @@ class UserGoalService(
         val updatedUserGoal = existingUserGoal.copy(
             goal_type = requestDto.goal_type,
             activity_level = requestDto.activity_level,
-            calorie_goal = GoalCalculator.calculateCalorieGoal(requestDto.goal_type, requestDto.activity_level),
-            water_goal = GoalCalculator.calculateWaterGoal(requestDto.activity_level),
-            steps_goal = GoalCalculator.calculateStepsGoal(requestDto.activity_level),
-            proteins_goal = GoalCalculator.calculateProteinsGoal(requestDto.goal_type),
-            fats_goal = GoalCalculator.calculateFatsGoal(requestDto.goal_type),
-            carbohydrates_goal = GoalCalculator.calculateCarbohydratesGoal(requestDto.goal_type)
+            calorie_goal = GoalCalculator.calculateCalorieGoal(
+                requestDto.goal_type, 
+                requestDto.activity_level, 
+                requestDto.weight_goal
+            ),
+            water_goal = GoalCalculator.calculateWaterGoal(
+                requestDto.activity_level, 
+                requestDto.weight_goal
+            ),
+            steps_goal = GoalCalculator.calculateStepsGoal(
+                requestDto.activity_level, 
+                requestDto.weight_goal
+            ),
+            proteins_goal = GoalCalculator.calculateProteinsGoal(
+                requestDto.goal_type, 
+                requestDto.weight_goal
+            ),
+            fats_goal = GoalCalculator.calculateFatsGoal(
+                requestDto.goal_type, 
+                requestDto.weight_goal
+            ),
+            carbohydrates_goal = GoalCalculator.calculateCarbohydratesGoal(
+                requestDto.goal_type, 
+                requestDto.weight_goal
+            ),
+            weight_goal = requestDto.weight_goal
         )
         
         userGoalRepository.update(updatedUserGoal)

@@ -13,5 +13,6 @@ data class UserGoal(
     val steps_goal: Int,
     val proteins_goal: Int, // in grams
     val fats_goal: Int, // in grams
-    val carbohydrates_goal: Int // in grams
+    val carbohydrates_goal: Int, // in grams
+    val weight_goal: Double // in kilograms
 ) 
