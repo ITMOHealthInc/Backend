@@ -1,32 +1,17 @@
 package org.example.models
 
-import kotlinx.serialization.Serializable
+import org.example.enums.ActivityLevel
+import org.example.enums.GoalType
+import java.util.UUID
 
-@Serializable
-data class CreateGoalRequest(
-    val goal_type: String,
-    val activity_level: String,
-    val weekly_target: Double,
-    val calorie_goal: Int,
-    val water_goal: Int,
-    val steps_goal: Int,
-    val bju_goal: String
-)
-
-@Serializable              // one row per user, PK = user_id
 data class UserGoal(
     val user_id: String,
-    val goal_type: String,
-    val activity_level: String,
-    val weekly_target: Double,
+    val goal_type: GoalType,
+    val activity_level: ActivityLevel,
     val calorie_goal: Int,
-    val water_goal: Int,
+    val water_goal: Int,  // in milliliters
     val steps_goal: Int,
-    val bju_goal: String
-)
-
-@Serializable
-data class ErrorResponse(val message: String)
-
-@Serializable
-data class GoalCreatedResponse(val message: String, val goal: UserGoal)
+    val proteins_goal: Int, // in grams
+    val fats_goal: Int, // in grams
+    val carbohydrates_goal: Int // in grams
+) 

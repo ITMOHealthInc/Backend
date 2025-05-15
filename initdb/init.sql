@@ -101,19 +101,6 @@ CREATE TABLE IF NOT EXISTS user_measurements (
     measured_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW()  -- дата/время замера
 );
 
-
--- Create the user_goals table
-CREATE TABLE IF NOT EXISTS user_goals (
-                            user_id VARCHAR(50) PRIMARY KEY,           -- user ID as the primary key
-                            goal_type VARCHAR(50) NOT NULL,            -- goal type (e.g., "weight_loss")
-                            activity_level VARCHAR(50) NOT NULL,       -- activity level (e.g., "medium")
-                            weekly_target DOUBLE PRECISION NOT NULL,   -- weekly goal (e.g., 0.5 kg)
-                            calorie_goal INTEGER NOT NULL,             -- daily calorie goal (e.g., 1500)
-                            water_goal INTEGER NOT NULL,               -- daily water intake goal (ml)
-                            steps_goal INTEGER NOT NULL,               -- daily steps goal
-                            bju_goal VARCHAR(50) NOT NULL              -- body composition goal (e.g., "standard")
-);
-
 WITH RECURSIVE counter AS (
     SELECT 1 AS n, 50 AS water_count
     UNION ALL
@@ -124,3 +111,15 @@ WITH RECURSIVE counter AS (
 INSERT INTO products (name, affiliation, water, mass)
 SELECT 'Вода', 'GENERAL', water_count, water_count
 FROM counter;
+
+CREATE TABLE IF NOT EXISTS user_goals (
+    user_id VARCHAR(50) PRIMARY KEY,
+    goal_type VARCHAR(50) NOT NULL,
+    activity_level VARCHAR(50) NOT NULL,
+    calorie_goal INTEGER NOT NULL,
+    water_goal INTEGER NOT NULL,
+    steps_goal INTEGER NOT NULL,
+    proteins_goal INTEGER NOT NULL,
+    fats_goal INTEGER NOT NULL,
+    carbohydrates_goal INTEGER NOT NULL
+)
