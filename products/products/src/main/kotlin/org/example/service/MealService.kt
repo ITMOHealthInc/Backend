@@ -25,6 +25,7 @@ import org.example.enums.Affiliation
 import java.time.LocalDateTime
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import kotlin.math.roundToInt
 
 class MealService(
     private val mealsRepository: MealsRepository,
@@ -343,5 +344,45 @@ class MealService(
                 carbohydrates = totalCarbohydrates
             )
         )
+    }
+
+    fun createWaterMeal(waterAmount: Long, username: String): MealDTO {
+        // Check if user exists
+        if (!userRepository.exists(username)) {
+            throw IllegalArgumentException("User with username $username does not exist")
+        }
+
+        // Round water amount to the nearest value divisible by 50
+        val roundedWaterAmount = ((waterAmount / 50.0).roundToInt() * 50).toLong()
+
+        // Calculate product ID for water
+        val productId = (roundedWaterAmount / 50).toInt()
+        
+        // Validate that the calculated product ID is in the valid range for water products (1-45)
+        if (productId < 1 || productId > 45) {
+            throw IllegalArgumentException("Water amount results in invalid product ID: $productId. Valid range is 1-45 (50-2250ml).")
+        }
+
+        // Verify that the product exists
+        val product = productRepository.findById(productId.toLong())
+            ?: throw IllegalArgumentException("Water product with id $productId not found")
+
+        // Create the meal
+        val meal = Meals(
+            id = 0, // Will be set by the database
+            type = TypesMeals.SNACK, // Using SNACK type for water meals
+            addedAt = LocalDateTime.now(),
+            username = username
+        )
+        val createdMeal = mealsRepository.insert(meal)
+
+        // Add water product to the meal
+        mealsContentRepository.insert(MealsContent(
+            mealId = createdMeal.id,
+            contentId = productId.toLong(),
+            typeContent = TypesMealsContent.PRODUCT
+        ))
+
+        return getMeal(createdMeal.id, username)!!
     }
 } 

@@ -9,6 +9,7 @@ import org.example.dto.ErrorResponse
 import org.example.dto.MealDTO
 import org.example.dto.MealRequestDTO
 import org.example.dto.MealSummaryDTO
+import org.example.dto.WaterMealRequestDTO
 import org.example.service.MealService
 import org.example.repository.MealsRepository
 import org.example.repository.MealsContentRepository
@@ -198,6 +199,29 @@ fun Application.configureMealRouting() {
                 call.respond(HttpStatusCode.Forbidden, ErrorResponse(e.message ?: "Access denied"))
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to retrieve meal summary: ${e.message}"))
+            }
+        }
+
+        // Add a water meal
+        post("/meals/water") {
+            try {
+                val username = call.request.headers["X-User-ID"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
+                    return@post
+                }
+                val waterRequest = call.receive<WaterMealRequestDTO>()
+                
+                val createdMeal = mealService.createWaterMeal(waterRequest.waterAmount, username)
+                call.respond(HttpStatusCode.Created, createdMeal)
+            } catch (e: IllegalArgumentException) {
+                if (e.message?.contains("User with username") == true) {
+                    call.respond(HttpStatusCode.NotFound, ErrorResponse(e.message ?: "User not found"))
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, ErrorResponse(e.message ?: "Invalid meal data"))
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to create water meal: ${e.message}"))
             }
         }
 
