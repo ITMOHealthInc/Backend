@@ -16,8 +16,7 @@ COPY achievements/gradle ./gradle
 COPY achievements/src ./src
 
 # Build the application with Gradle
-RUN ./gradlew build -x test --no-daemon -Dorg.gradle.jvmargs="--add-opens java.base/java.util=ALL-UNNAMED"
-
+RUN ./gradlew build --no-daemon
 
 FROM openjdk:17-jdk-slim
 # Copy the built application from the build stage
