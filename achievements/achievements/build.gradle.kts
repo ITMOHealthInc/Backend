@@ -46,7 +46,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
 
-    // Ktor client dependencies
+    
     implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-apache:$ktor_version")
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")

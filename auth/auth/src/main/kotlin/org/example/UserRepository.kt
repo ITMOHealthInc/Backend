@@ -9,7 +9,7 @@ import java.time.Instant
 
 object UserRepository {
 
-    // Создание пользователя с расширенными полями
+    
     fun createUser(username: String, password: String, name: String, profilePicturePath: String? = null): Boolean {
         val sql = """
             INSERT INTO users (username, password, name, profile_picture_path, created_at) 
@@ -19,7 +19,7 @@ object UserRepository {
         Database.getConnection().use { connection ->
             connection.prepareStatement(sql).use { statement: PreparedStatement ->
                 statement.setString(1, username)
-                statement.setString(2, password) // Пароль должен быть уже захэширован
+                statement.setString(2, password) 
                 statement.setString(3, name)
                 statement.setString(4, profilePicturePath)
                 statement.setTimestamp(5, Timestamp.from(Instant.now()))
@@ -29,7 +29,7 @@ object UserRepository {
         }
     }
 
-    // Поиск пользователя по username
+    
     fun findUserByUsername(username: String): User? {
         val sql = "SELECT * FROM users WHERE username = ?"
         Database.getConnection().use { connection ->
@@ -51,7 +51,7 @@ object UserRepository {
         }
     }
 
-    // Обновление данных пользователя
+    
     fun updateUser(username: String, newName: String? = null, newProfilePicturePath: String? = null): Boolean {
         val updates = mutableListOf<String>()
         val params = mutableListOf<Any>()
@@ -85,7 +85,7 @@ object UserRepository {
         }
     }
 
-    // Удаление пользователя
+    
     fun deleteUser(username: String): Boolean {
         val sql = "DELETE FROM users WHERE username = ?"
         Database.getConnection().use { connection ->
@@ -96,7 +96,7 @@ object UserRepository {
         }
     }
 
-    // Проверка существования пользователя
+    
     fun existsByUsername(username: String): Boolean {
         val sql = "SELECT COUNT(*) FROM users WHERE username = ?"
         Database.getConnection().use { connection ->
@@ -109,12 +109,12 @@ object UserRepository {
         }
     }
 
-    // Обновление пароля
+    
     fun updatePassword(username: String, newPassword: String): Boolean {
         val sql = "UPDATE users SET password = ? WHERE username = ?"
         Database.getConnection().use { connection ->
             connection.prepareStatement(sql).use { statement: PreparedStatement ->
-                statement.setString(1, newPassword) // Новый пароль должен быть захэширован
+                statement.setString(1, newPassword) 
                 statement.setString(2, username)
                 return statement.executeUpdate() > 0
             }

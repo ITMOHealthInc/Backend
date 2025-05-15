@@ -32,7 +32,7 @@ fun Application.configureMealRouting() {
     )
 
     routing {
-        // Create a new meal
+        
         post("/meals") {
             try {
                 val mealRequest = call.receive<MealRequestDTO>()
@@ -54,7 +54,7 @@ fun Application.configureMealRouting() {
             }
         }
 
-        // Get all meals for a user
+        
         get("/meals") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -74,7 +74,7 @@ fun Application.configureMealRouting() {
             }
         }
 
-        // Get a specific meal by ID
+        
         get("/meals/{id}") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -103,7 +103,7 @@ fun Application.configureMealRouting() {
             }
         }
 
-        // Update a meal
+        
         put("/meals/{id}") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -115,7 +115,7 @@ fun Application.configureMealRouting() {
 
                 val mealRequest = call.receive<MealRequestDTO>()
                 
-                // Check if the meal exists and belongs to the user
+                
                 val existingMeal = mealService.getMeal(id, username)
                     ?: return@put call.respond(HttpStatusCode.NotFound, ErrorResponse("Meal not found"))
                 
@@ -142,7 +142,7 @@ fun Application.configureMealRouting() {
             }
         }
 
-        // Delete a meal
+        
         delete("/meals/{id}") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -173,7 +173,7 @@ fun Application.configureMealRouting() {
             }
         }
 
-        // Get meal summary (water content and KBZHU)
+        
         get("/meals/{id}/summary") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -202,7 +202,7 @@ fun Application.configureMealRouting() {
             }
         }
 
-        // Add a water meal
+        
         post("/meals/water") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -225,7 +225,7 @@ fun Application.configureMealRouting() {
             }
         }
 
-        // Get daily meal summary
+        
         get("/meals/daily-summary") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -233,7 +233,7 @@ fun Application.configureMealRouting() {
                     return@get
                 }
                 
-                // Parse date from query parameter, default to today if not provided
+                
                 val dateStr = call.request.queryParameters["date"]
                 val date = if (dateStr != null) {
                     try {
@@ -264,7 +264,7 @@ fun Application.configureMealRouting() {
             }
         }
         
-        // Get monthly meal summary
+        
         get("/meals/monthly-summary") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -272,7 +272,7 @@ fun Application.configureMealRouting() {
                     return@get
                 }
                 
-                // Parse year and month from query parameters, default to current year/month if not provided
+                
                 val yearStr = call.request.queryParameters["year"]
                 val monthStr = call.request.queryParameters["month"]
                 
@@ -280,7 +280,7 @@ fun Application.configureMealRouting() {
                 val year = yearStr?.toIntOrNull() ?: currentDate.year
                 val month = monthStr?.toIntOrNull() ?: currentDate.monthValue
                 
-                // Validate year and month
+                
                 if (year < 1) {
                     return@get call.respond(
                         HttpStatusCode.BadRequest,

@@ -26,14 +26,14 @@ class RecipeService(
             throw IllegalArgumentException("User with username $username does not exist")
         }
 
-        // Validate products
+        
         recipeRequest.productIds.forEach { productId ->
             val product = productRepository.findById(productId)
                 ?: throw IllegalArgumentException("Product with id $productId not found")
 
-            // Check if the product is either:
-            // 1. A regional product (not USER)
-            // 2. A user product belonging to the same user
+            
+            
+            
             if (product.affiliation == Affiliation.USER) {
                 val productOwner = userProductRepository.findByProductId(product.id!!)
                     ?: throw IllegalArgumentException("Product ${product.id} is marked as USER but has no owner")
@@ -47,7 +47,7 @@ class RecipeService(
         val recipe = recipeRequest.toEntity(username)
         val recipeId = recipeRepository.insert(recipe)
 
-        // Now that we have the recipe ID, we can insert the recipe products
+        
         recipeRequest.productIds.forEach { productId ->
             recipeProductRepository.insert(RecipeProduct(recipeId, productId))
         }
@@ -62,7 +62,7 @@ class RecipeService(
 
         val recipe = recipeRepository.findById(id) ?: return null
         
-        // Check if the recipe belongs to the user
+        
         if (recipe.username != username) {
             throw SecurityException("You don't have permission to access this recipe")
         }
@@ -111,12 +111,12 @@ class RecipeService(
 
         val recipe = recipeRepository.findById(id) ?: return false
         
-        // Check if the recipe belongs to the user
+        
         if (recipe.username != username) {
             throw SecurityException("You don't have permission to delete this recipe")
         }
         
-        // Check if all products in the recipe are accessible
+        
         val recipeProducts = recipeProductRepository.findByRecipeId(id)
         recipeProducts.forEach { recipeProduct ->
             val product = productRepository.findById(recipeProduct.productId)
@@ -140,12 +140,12 @@ class RecipeService(
 
         val existingRecipe = recipeRepository.findById(id) ?: return null
         
-        // Check if the recipe belongs to the user
+        
         if (existingRecipe.username != username) {
             throw SecurityException("You don't have permission to update this recipe")
         }
         
-        // Validate products
+        
         recipeRequest.productIds.forEach { productId ->
             val product = productRepository.findById(productId)
                 ?: throw IllegalArgumentException("Product with id $productId not found")
@@ -166,10 +166,10 @@ class RecipeService(
             return null
         }
 
-        // Delete existing products and add new ones
+        
         recipeProductRepository.deleteByRecipeId(recipe.id!!)
         
-        // Add new products
+        
         recipeRequest.productIds.forEach { productId ->
             recipeProductRepository.insert(RecipeProduct(recipe.id!!, productId))
         }

@@ -36,7 +36,7 @@ curl -X GET http://localhost/user_measurements/measurements \
   "bloodGlucose": 5.6,
   "bloodPressureSystolic": 120,
   "bloodPressureDiastolic": 80,
-  "measuredAt": "2025-05-06T10:42:08.994192",
+  "measuredAt": "2025-05-06T10:42:08.994192"
 }
 ```
 
@@ -103,7 +103,7 @@ curl -X POST http://localhost/user_measurements/update-weight \
   "bloodGlucose": 5.6,
   "bloodPressureSystolic": 120,
   "bloodPressureDiastolic": 80,
-  "measuredAt": "2025-05-06T12:15:30.123456",
+  "measuredAt": "2025-05-06T12:15:30.123456"
 }
 ```
 
@@ -241,21 +241,21 @@ curl -X POST http://localhost/user_measurements/update-waist \
 ## Модели
 
 ```kotlin
-// Запрос на обновление отдельных полей
-data class UpdateGenderRequest(val gender: String) // Пол
-data class UpdateWeightRequest(val weight: Float) // Вес
-data class UpdateHeightRequest(val height: Float) // Рост
-data class UpdateWaistRequest(val waist: Float) // Талия
-data class UpdateHipsRequest(val hips: Float) // Бёдра
-data class UpdateChestRequest(val chest: Float) // Грудь
-data class UpdateArmsRequest(val arms: Float) // Руки
-data class UpdateBodyFatRequest(val bodyFat: Float) // Объём жира
-data class UpdateMuscleMassRequest(val muscleMass: Float) // Мышечная масса
-data class UpdateBloodGlucoseRequest(val bloodGlucose: Float) // Глюкоза в крови
-data class UpdateBloodPressureSystolicRequest(val systolic: Int) // Давление систолическое
-data class UpdateBloodPressureDiastolicRequest(val diastolic: Int) // Давление диастолическое
 
-// Ответ со всеми замерами
+data class UpdateGenderRequest(val gender: String) 
+data class UpdateWeightRequest(val weight: Float) 
+data class UpdateHeightRequest(val height: Float) 
+data class UpdateWaistRequest(val waist: Float) 
+data class UpdateHipsRequest(val hips: Float) 
+data class UpdateChestRequest(val chest: Float) 
+data class UpdateArmsRequest(val arms: Float) 
+data class UpdateBodyFatRequest(val bodyFat: Float) 
+data class UpdateMuscleMassRequest(val muscleMass: Float) 
+data class UpdateBloodGlucoseRequest(val bloodGlucose: Float) 
+data class UpdateBloodPressureSystolicRequest(val systolic: Int) 
+data class UpdateBloodPressureDiastolicRequest(val diastolic: Int) 
+
+
 data class MeasurementsResponse(
     val gender: String,
     val weight: Float,

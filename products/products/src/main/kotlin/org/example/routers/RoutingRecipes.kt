@@ -21,7 +21,7 @@ fun Application.configureRecipeRouting() {
     val recipeService = RecipeService(recipeRepository, recipeProductRepository, productRepository, userProductRepository)
 
     routing {
-        // Create a new recipe
+        
         post("/recipes") {
             try {
                 val recipeRequest = call.receive<RecipeRequestDTO>()
@@ -39,7 +39,7 @@ fun Application.configureRecipeRouting() {
             }
         }
 
-        // Get all recipes for a user
+        
         get("/recipes") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -53,7 +53,7 @@ fun Application.configureRecipeRouting() {
             }
         }
 
-        // Get a specific recipe by ID
+        
         get("/recipes/{id}") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -74,7 +74,7 @@ fun Application.configureRecipeRouting() {
             }
         }
 
-        // Update a recipe
+        
         put("/recipes/{id}") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -86,7 +86,7 @@ fun Application.configureRecipeRouting() {
 
                 val recipeRequest = call.receive<RecipeRequestDTO>()
                 
-                // Check if the recipe exists and belongs to the user
+                
                 val existingRecipe = recipeService.getRecipe(id, username)
                     ?: return@put call.respond(HttpStatusCode.NotFound, ErrorResponse("Recipe not found"))
                 
@@ -107,7 +107,7 @@ fun Application.configureRecipeRouting() {
             }
         }
 
-        // Delete a recipe
+        
         delete("/recipes/{id}") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -117,7 +117,7 @@ fun Application.configureRecipeRouting() {
                 val id = call.parameters["id"]?.toLongOrNull()
                     ?: return@delete call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid recipe ID"))
 
-                // Check if the recipe exists and belongs to the user
+                
                 val existingRecipe = recipeService.getRecipe(id, username)
                     ?: return@delete call.respond(HttpStatusCode.NotFound, ErrorResponse("Recipe not found"))
                 
