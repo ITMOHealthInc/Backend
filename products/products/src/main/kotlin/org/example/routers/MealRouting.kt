@@ -263,5 +263,54 @@ fun Application.configureMealRouting() {
                 call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to retrieve daily summary: ${e.message}"))
             }
         }
+        
+        // Get monthly meal summary
+        get("/meals/monthly-summary") {
+            try {
+                val username = call.request.headers["X-User-ID"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
+                    return@get
+                }
+                
+                // Parse year and month from query parameters, default to current year/month if not provided
+                val yearStr = call.request.queryParameters["year"]
+                val monthStr = call.request.queryParameters["month"]
+                
+                val currentDate = LocalDate.now()
+                val year = yearStr?.toIntOrNull() ?: currentDate.year
+                val month = monthStr?.toIntOrNull() ?: currentDate.monthValue
+                
+                // Validate year and month
+                if (year < 1) {
+                    return@get call.respond(
+                        HttpStatusCode.BadRequest,
+                        ErrorResponse("Invalid year: $year. Year must be positive.")
+                    )
+                }
+                
+                if (month < 1 || month > 12) {
+                    return@get call.respond(
+                        HttpStatusCode.BadRequest,
+                        ErrorResponse("Invalid month: $month. Month must be between 1 and 12.")
+                    )
+                }
+
+                val summary = mealService.getMonthlySummary(year, month, username)
+                    ?: return@get call.respond(HttpStatusCode.NotFound, ErrorResponse("No meals found for this month"))
+                call.respond(HttpStatusCode.OK, summary)
+            } catch (e: IllegalArgumentException) {
+                if (e.message?.contains("User with username") == true) {
+                    call.respond(HttpStatusCode.NotFound, ErrorResponse(e.message ?: "User not found"))
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, ErrorResponse(e.message ?: "Invalid request"))
+                }
+            } catch (e: NumberFormatException) {
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid year or month format"))
+            } catch (e: SecurityException) {
+                call.respond(HttpStatusCode.Forbidden, ErrorResponse(e.message ?: "Access denied"))
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to retrieve monthly summary: ${e.message}"))
+            }
+        }
     }
 } 

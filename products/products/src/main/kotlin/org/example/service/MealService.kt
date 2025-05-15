@@ -4,6 +4,7 @@ import org.example.dto.MealDTO
 import org.example.dto.MealRequestDTO
 import org.example.dto.MealSummaryDTO
 import org.example.dto.DailySummaryDTO
+import org.example.dto.MonthlySummaryDTO
 import org.example.dto.ProductDTO
 import org.example.dto.RecipeDTO
 import org.example.dto.Kbzhu
@@ -384,5 +385,127 @@ class MealService(
         ))
 
         return getMeal(createdMeal.id, username)!!
+    }
+    
+    fun getMonthlySummary(year: Int, month: Int, username: String): MonthlySummaryDTO? {
+        // Check if user exists
+        if (!userRepository.exists(username)) {
+            throw IllegalArgumentException("User with username $username does not exist")
+        }
+        
+        // Validate month
+        if (month < 1 || month > 12) {
+            throw IllegalArgumentException("Invalid month: $month. Month must be between 1 and 12.")
+        }
+        
+        // Get all meals for the user
+        val allMeals = mealsRepository.findByUsername(username)
+        
+        // Filter meals for the specified month and year
+        val mealsForMonth = allMeals.filter { 
+            val mealDate = it.addedAt.toLocalDate()
+            mealDate.year == year && mealDate.monthValue == month
+        }
+        
+        // Create a map with all days of the month
+        val daysInMonth = getDaysInMonth(year, month)
+        val mealsByDay = mealsForMonth.groupBy { it.addedAt.toLocalDate() }
+        
+        // Track monthly totals
+        var totalWater = 0.0
+        var totalCalories = 0.0
+        var totalProteins = 0.0
+        var totalFats = 0.0
+        var totalCarbohydrates = 0.0
+        
+        // Create daily summaries for every day in the month
+        val dailySummaries = mutableListOf<DailySummaryDTO>()
+        
+        for (day in 1..daysInMonth) {
+            val date = LocalDate.of(year, month, day)
+            val mealsForDay = mealsByDay[date] ?: emptyList()
+            
+            if (mealsForDay.isEmpty()) {
+                // No meals for this day, add empty summary
+                dailySummaries.add(
+                    DailySummaryDTO(
+                        date = date.toString(),
+                        totalWater = 0.0,
+                        totalKbzhu = Kbzhu(0.0, 0.0, 0.0, 0.0)
+                    )
+                )
+                continue
+            }
+            
+            // Track daily totals
+            var dailyWater = 0.0
+            var dailyCalories = 0.0
+            var dailyProteins = 0.0
+            var dailyFats = 0.0
+            var dailyCarbohydrates = 0.0
+            
+            // Process each meal for the day
+            for (meal in mealsForDay) {
+                val mealSummary = getMealSummary(meal.id, username) ?: continue
+                
+                // Accumulate water and KBZHU for the day
+                dailyWater += mealSummary.totalWater
+                dailyCalories += mealSummary.totalKbzhu.calories
+                dailyProteins += mealSummary.totalKbzhu.proteins
+                dailyFats += mealSummary.totalKbzhu.fats
+                dailyCarbohydrates += mealSummary.totalKbzhu.carbohydrates
+            }
+            
+            // Create daily summary
+            val dailySummary = DailySummaryDTO(
+                date = date.toString(),
+                totalWater = dailyWater,
+                totalKbzhu = Kbzhu(
+                    calories = dailyCalories,
+                    proteins = dailyProteins,
+                    fats = dailyFats,
+                    carbohydrates = dailyCarbohydrates
+                )
+            )
+            
+            // Add to daily summaries list
+            dailySummaries.add(dailySummary)
+            
+            // Accumulate for monthly totals
+            totalWater += dailyWater
+            totalCalories += dailyCalories
+            totalProteins += dailyProteins
+            totalFats += dailyFats
+            totalCarbohydrates += dailyCarbohydrates
+        }
+        
+        // Already sorted by day
+        return MonthlySummaryDTO(
+            year = year,
+            month = month,
+            totalWater = totalWater,
+            totalKbzhu = Kbzhu(
+                calories = totalCalories,
+                proteins = totalProteins,
+                fats = totalFats,
+                carbohydrates = totalCarbohydrates
+            ),
+            dailySummaries = dailySummaries
+        )
+    }
+    
+    // Helper function to get the number of days in a month
+    private fun getDaysInMonth(year: Int, month: Int): Int {
+        return when (month) {
+            1, 3, 5, 7, 8, 10, 12 -> 31
+            4, 6, 9, 11 -> 30
+            2 -> if (isLeapYear(year)) 29 else 28
+            else -> throw IllegalArgumentException("Invalid month: $month")
+        }
+    }
+    
+    // Helper function to check if a year is a leap year
+    private fun isLeapYear(year: Int): Boolean {
+        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
     }
 } 
