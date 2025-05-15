@@ -36,23 +36,23 @@ data class Product(
     val zinc: Double? = null
 ) {
     fun calculateKbzhu(): Kbzhu {
-        // Белки
+        
         val proteins = this.proteins ?: 0.0
 
-        // Углеводы: сахара + клетчатка
+        
         val fiber = this.fiber ?: 0.0
         val sugar = this.sugar ?: 0.0
         val carbohydrates = fiber + sugar
 
-        // Жиры: насыщенные + полиненасыщенные
+        
         val saturatedFat = this.saturatedFat ?: 0.0
         val polyunsaturatedFat = this.polyunsaturatedFat ?: 0.0
         val fats = saturatedFat + polyunsaturatedFat
 
-        // Алкоголь
+        
         val alcohol = this.alcohol ?: 0.0
 
-        // Калории
+        
         val calories = (proteins * 4) + (carbohydrates * 4) + (fats * 9) + (alcohol * 7)
 
         return Kbzhu(

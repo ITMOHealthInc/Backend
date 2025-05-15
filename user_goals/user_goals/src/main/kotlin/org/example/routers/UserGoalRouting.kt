@@ -17,7 +17,6 @@ fun Application.configureUserGoalRouting() {
     val userGoalService = UserGoalService()
     
     routing {
-        // Create a new user goal
         post("/user-goals") {
             try {
                 val requestDto = call.receive<UserGoalRequestDto>()
@@ -35,7 +34,7 @@ fun Application.configureUserGoalRouting() {
             }
         }
         
-        // Get user goal
+        
         get("/user-goals") {
             try {
                 val userId = call.request.headers["X-User-ID"] 
@@ -52,7 +51,7 @@ fun Application.configureUserGoalRouting() {
             }
         }
         
-        // Update user goal
+        
         put("/user-goals") {
             try {
                 val userId = call.request.headers["X-User-ID"] 
@@ -71,7 +70,7 @@ fun Application.configureUserGoalRouting() {
             }
         }
         
-        // Delete user goal
+        
         delete("/user-goals") {
             try {
                 val userId = call.request.headers["X-User-ID"] 

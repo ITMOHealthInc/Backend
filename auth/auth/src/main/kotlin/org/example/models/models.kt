@@ -1,10 +1,10 @@
 package org.example.models
 
 data class RegisterRequest(
-    val username: String,       // Никнейм (уникальный идентификатор)
-    val password: String,      // Пароль
-    val name: String,          // Реальное имя пользователя
-    val profilePictureBase64: String? = null  // Фото в формате base64 (опционально)
+    val username: String,       
+    val password: String,      
+    val name: String,          
+    val profilePictureBase64: String? = null  
 )
 
 data class LoginRequest(
@@ -29,7 +29,7 @@ data class User(
     val username: String,
     val password: String,
     val name: String,
-    val profilePicturePath: String? = null  // Путь к файлу на сервере
+    val profilePicturePath: String? = null  
 )
 
 data class UpdateProfileRequest(

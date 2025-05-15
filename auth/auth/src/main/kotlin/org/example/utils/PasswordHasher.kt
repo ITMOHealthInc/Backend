@@ -3,7 +3,7 @@ package org.example.utils
 import java.security.MessageDigest
 
 object PasswordHasher {
-    private const val SALT = "secter_123" // Лучше использовать уникальную соль для каждого пользователя
+    private const val SALT = "secter_123" 
 
     fun hash(password: String): String {
         val md = MessageDigest.getInstance("SHA-256")

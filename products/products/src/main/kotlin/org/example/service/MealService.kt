@@ -38,19 +38,19 @@ class MealService(
     private val userProductRepository: UserProductRepository = UserProductRepository()
 ) {
     fun createMeal(mealRequest: MealRequestDTO, username: String): MealDTO {
-        // Check if user exists
+        
         if (!userRepository.exists(username)) {
             throw IllegalArgumentException("User with username $username does not exist")
         }
 
-        // Validate products access
+        
         mealRequest.productIds.forEach { productId ->
             val product = productRepository.findById(productId)
                 ?: throw IllegalArgumentException("Product with id $productId not found")
             
-            // Check if the product is either:
-            // 1. A general product (not USER)
-            // 2. A user product belonging to the same user
+            
+            
+            
             if (product.affiliation == Affiliation.USER) {
                 val productOwner = userProductRepository.findByProductId(product.id!!)
                     ?: throw IllegalArgumentException("Product ${product.id} is marked as USER but has no owner")
@@ -61,27 +61,27 @@ class MealService(
             }
         }
 
-        // Validate recipes access
+        
         mealRequest.recipeIds.forEach { recipeId ->
             val recipe = recipeRepository.findById(recipeId)
                 ?: throw IllegalArgumentException("Recipe with id $recipeId not found")
             
-            // Check if the recipe belongs to the user
+            
             if (recipe.username != username) {
                 throw IllegalArgumentException("Recipe ${recipe.id} belongs to a different user")
             }
         }
 
-        // Create the meal
+        
         val meal = Meals(
-            id = 0, // Will be set by the database
+            id = 0, 
             type = mealRequest.type,
             addedAt = LocalDateTime.now(),
             username = username
         )
         val createdMeal = mealsRepository.insert(meal)
 
-        // Add products to the meal
+        
         mealRequest.productIds.forEach { productId ->
             val product = productRepository.findById(productId)
                 ?: throw IllegalArgumentException("Product with id $productId not found")
@@ -93,7 +93,7 @@ class MealService(
             ))
         }
 
-        // Add recipes to the meal
+        
         mealRequest.recipeIds.forEach { recipeId ->
             val recipe = recipeRepository.findById(recipeId)
                 ?: throw IllegalArgumentException("Recipe with id $recipeId not found")
@@ -109,14 +109,14 @@ class MealService(
     }
 
     fun getMeal(id: Long, username: String): MealDTO? {
-        // Check if user exists
+        
         if (!userRepository.exists(username)) {
             throw IllegalArgumentException("User with username $username does not exist")
         }
 
         val meal = mealsRepository.findById(id) ?: return null
         
-        // Check if the meal belongs to the user
+        
         if (meal.username != username) {
             throw SecurityException("You don't have permission to access this meal")
         }
@@ -133,7 +133,7 @@ class MealService(
         val products = productIds.mapNotNull { productRepository.findById(it) }
             .map { it.toDTO() }
         
-        // Get recipes with their products
+        
         val recipes = recipeIds.mapNotNull { recipeId ->
             val recipe = recipeRepository.findById(recipeId) ?: return@mapNotNull null
             val recipeProductIds = recipeProductRepository.findByRecipeId(recipeId)
@@ -153,7 +153,7 @@ class MealService(
     }
 
     fun getMealsByUsername(username: String): List<MealDTO> {
-        // Check if user exists
+        
         if (!userRepository.exists(username)) {
             throw IllegalArgumentException("User with username $username does not exist")
         }
@@ -161,7 +161,7 @@ class MealService(
     }
 
     fun getAllMeals(username: String): List<MealDTO> {
-        // Check if user exists
+        
         if (!userRepository.exists(username)) {
             throw IllegalArgumentException("User with username $username does not exist")
         }
@@ -169,14 +169,14 @@ class MealService(
     }
 
     fun deleteMeal(id: Long, username: String): Boolean {
-        // Check if user exists
+        
         if (!userRepository.exists(username)) {
             throw IllegalArgumentException("User with username $username does not exist")
         }
 
         val meal = mealsRepository.findById(id) ?: return false
         
-        // Check if the meal belongs to the user
+        
         if (meal.username != username) {
             throw SecurityException("You don't have permission to delete this meal")
         }
@@ -186,35 +186,35 @@ class MealService(
     }
 
     fun updateMeal(id: Long, mealRequest: MealRequestDTO, username: String): MealDTO? {
-        // Check if user exists
+        
         if (!userRepository.exists(username)) {
             throw IllegalArgumentException("User with username $username does not exist")
         }
 
         val existingMeal = mealsRepository.findById(id) ?: return null
         
-        // Check if the meal belongs to the user
+        
         if (existingMeal.username != username) {
             throw SecurityException("You don't have permission to update this meal")
         }
 
-        // Validate products
+        
         mealRequest.productIds.forEach { productId ->
             val product = productRepository.findById(productId)
                 ?: throw IllegalArgumentException("Product with id $productId not found")
         }
 
-        // Validate recipes
+        
         mealRequest.recipeIds.forEach { recipeId ->
             val recipe = recipeRepository.findById(recipeId)
                 ?: throw IllegalArgumentException("Recipe with id $recipeId not found")
         }
 
-        // Update the meal
+        
         val updatedMeal = Meals(
             id = id,
             type = mealRequest.type,
-            addedAt = existingMeal.addedAt, // Keep the original addedAt
+            addedAt = existingMeal.addedAt, 
             username = username
         )
 
@@ -222,10 +222,10 @@ class MealService(
             return null
         }
 
-        // Delete existing contents and add new ones
+        
         mealsContentRepository.deleteByMealId(id)
 
-        // Add new products
+        
         mealRequest.productIds.forEach { productId ->
             mealsContentRepository.insert(MealsContent(
                 mealId = id,
@@ -234,7 +234,7 @@ class MealService(
             ))
         }
 
-        // Add new recipes
+        
         mealRequest.recipeIds.forEach { recipeId ->
             mealsContentRepository.insert(MealsContent(
                 mealId = id,
@@ -247,14 +247,14 @@ class MealService(
     }
 
     fun getMealSummary(id: Long, username: String): MealSummaryDTO? {
-        // Check if user exists
+        
         if (!userRepository.exists(username)) {
             throw IllegalArgumentException("User with username $username does not exist")
         }
 
         val meal = mealsRepository.findById(id) ?: return null
         
-        // Check if the meal belongs to the user
+        
         if (meal.username != username) {
             throw SecurityException("You don't have permission to access this meal")
         }
@@ -276,10 +276,10 @@ class MealService(
             recipeProductIds.mapNotNull { productRepository.findById(it) }
         }.flatten()
         
-        // Calculate total water content
+        
         val totalWater = (products + recipes).sumOf { it.water ?: 0.0 }
         
-        // Calculate total KBZHU
+        
         val totalKbzhu = (products + recipes).fold(Kbzhu(0.0, 0.0, 0.0, 0.0)) { acc, product ->
             val kbzhu = product.calculateKbzhu()
             Kbzhu(
@@ -294,21 +294,21 @@ class MealService(
     }
     
     fun getDailySummary(date: LocalDate, username: String): DailySummaryDTO? {
-        // Check if user exists
+        
         if (!userRepository.exists(username)) {
             throw IllegalArgumentException("User with username $username does not exist")
         }
         
-        // Get all meals for the user
+        
         val allMeals = mealsRepository.findByUsername(username)
         
-        // Filter meals for the specified date
+        
         val mealsForDate = allMeals.filter { 
             val mealDate = it.addedAt.toLocalDate()
             mealDate.isEqual(date)
         }
         
-        // If no meals found for the date, return null or empty summary
+        
         if (mealsForDate.isEmpty()) {
             return DailySummaryDTO(
                 date = date.toString(),
@@ -317,7 +317,7 @@ class MealService(
             )
         }
         
-        // Track totals
+        
         var totalWater = 0.0
         var totalCalories = 0.0
         var totalProteins = 0.0
@@ -327,7 +327,7 @@ class MealService(
         for (meal in mealsForDate) {
             val mealSummary = getMealSummary(meal.id, username) ?: continue
             
-            // Accumulate water and KBZHU
+            
             totalWater += mealSummary.totalWater
             totalCalories += mealSummary.totalKbzhu.calories
             totalProteins += mealSummary.totalKbzhu.proteins
@@ -348,36 +348,36 @@ class MealService(
     }
 
     fun createWaterMeal(waterAmount: Long, username: String): MealDTO {
-        // Check if user exists
+        
         if (!userRepository.exists(username)) {
             throw IllegalArgumentException("User with username $username does not exist")
         }
 
-        // Round water amount to the nearest value divisible by 50
+        
         val roundedWaterAmount = ((waterAmount / 50.0).roundToInt() * 50).toLong()
 
-        // Calculate product ID for water
+        
         val productId = (roundedWaterAmount / 50).toInt()
         
-        // Validate that the calculated product ID is in the valid range for water products (1-45)
+        
         if (productId < 1 || productId > 45) {
             throw IllegalArgumentException("Water amount results in invalid product ID: $productId. Valid range is 1-45 (50-2250ml).")
         }
 
-        // Verify that the product exists
+        
         val product = productRepository.findById(productId.toLong())
             ?: throw IllegalArgumentException("Water product with id $productId not found")
 
-        // Create the meal
+        
         val meal = Meals(
-            id = 0, // Will be set by the database
-            type = TypesMeals.SNACK, // Using SNACK type for water meals
+            id = 0, 
+            type = TypesMeals.SNACK, 
             addedAt = LocalDateTime.now(),
             username = username
         )
         val createdMeal = mealsRepository.insert(meal)
 
-        // Add water product to the meal
+        
         mealsContentRepository.insert(MealsContent(
             mealId = createdMeal.id,
             contentId = productId.toLong(),
@@ -388,37 +388,37 @@ class MealService(
     }
     
     fun getMonthlySummary(year: Int, month: Int, username: String): MonthlySummaryDTO? {
-        // Check if user exists
+        
         if (!userRepository.exists(username)) {
             throw IllegalArgumentException("User with username $username does not exist")
         }
         
-        // Validate month
+        
         if (month < 1 || month > 12) {
             throw IllegalArgumentException("Invalid month: $month. Month must be between 1 and 12.")
         }
         
-        // Get all meals for the user
+        
         val allMeals = mealsRepository.findByUsername(username)
         
-        // Filter meals for the specified month and year
+        
         val mealsForMonth = allMeals.filter { 
             val mealDate = it.addedAt.toLocalDate()
             mealDate.year == year && mealDate.monthValue == month
         }
         
-        // Create a map with all days of the month
+        
         val daysInMonth = getDaysInMonth(year, month)
         val mealsByDay = mealsForMonth.groupBy { it.addedAt.toLocalDate() }
         
-        // Track monthly totals
+        
         var totalWater = 0.0
         var totalCalories = 0.0
         var totalProteins = 0.0
         var totalFats = 0.0
         var totalCarbohydrates = 0.0
         
-        // Create daily summaries for every day in the month
+        
         val dailySummaries = mutableListOf<DailySummaryDTO>()
         
         for (day in 1..daysInMonth) {
@@ -426,7 +426,7 @@ class MealService(
             val mealsForDay = mealsByDay[date] ?: emptyList()
             
             if (mealsForDay.isEmpty()) {
-                // No meals for this day, add empty summary
+                
                 dailySummaries.add(
                     DailySummaryDTO(
                         date = date.toString(),
@@ -437,18 +437,18 @@ class MealService(
                 continue
             }
             
-            // Track daily totals
+            
             var dailyWater = 0.0
             var dailyCalories = 0.0
             var dailyProteins = 0.0
             var dailyFats = 0.0
             var dailyCarbohydrates = 0.0
             
-            // Process each meal for the day
+            
             for (meal in mealsForDay) {
                 val mealSummary = getMealSummary(meal.id, username) ?: continue
                 
-                // Accumulate water and KBZHU for the day
+                
                 dailyWater += mealSummary.totalWater
                 dailyCalories += mealSummary.totalKbzhu.calories
                 dailyProteins += mealSummary.totalKbzhu.proteins
@@ -456,7 +456,7 @@ class MealService(
                 dailyCarbohydrates += mealSummary.totalKbzhu.carbohydrates
             }
             
-            // Create daily summary
+            
             val dailySummary = DailySummaryDTO(
                 date = date.toString(),
                 totalWater = dailyWater,
@@ -468,10 +468,10 @@ class MealService(
                 )
             )
             
-            // Add to daily summaries list
+            
             dailySummaries.add(dailySummary)
             
-            // Accumulate for monthly totals
+            
             totalWater += dailyWater
             totalCalories += dailyCalories
             totalProteins += dailyProteins
@@ -479,7 +479,7 @@ class MealService(
             totalCarbohydrates += dailyCarbohydrates
         }
         
-        // Already sorted by day
+        
         return MonthlySummaryDTO(
             year = year,
             month = month,
@@ -494,7 +494,7 @@ class MealService(
         )
     }
     
-    // Helper function to get the number of days in a month
+    
     private fun getDaysInMonth(year: Int, month: Int): Int {
         return when (month) {
             1, 3, 5, 7, 8, 10, 12 -> 31
@@ -504,7 +504,7 @@ class MealService(
         }
     }
     
-    // Helper function to check if a year is a leap year
+    
     private fun isLeapYear(year: Int): Boolean {
         return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
     }

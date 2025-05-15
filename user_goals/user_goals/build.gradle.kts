@@ -4,9 +4,9 @@ val logback_version: String by project
 
 plugins {
     kotlin("jvm") version "1.8.0"
-    kotlin("plugin.serialization") version "1.8.0"   // ← add this line
+    kotlin("plugin.serialization") version "1.8.0"   
 
-    id("io.ktor.plugin") version "2.2.3"   // same plugin auth uses
+    id("io.ktor.plugin") version "2.2.3"   
 }
 
 group = "org.example"

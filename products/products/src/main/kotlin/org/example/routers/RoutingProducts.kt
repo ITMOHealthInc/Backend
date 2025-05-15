@@ -25,7 +25,7 @@ fun Application.configureProductsRouting() {
     }
 
     routing {
-        // Create a new product
+        
         post("/products") {
             try {
                 val productDTO = call.receive<ProductDTO>()
@@ -43,7 +43,7 @@ fun Application.configureProductsRouting() {
             }
         }
 
-        // Get all products
+        
         get("/products") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -57,7 +57,7 @@ fun Application.configureProductsRouting() {
             }
         }
 
-        // Get a specific product by ID
+        
         get("/products/{id}") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -78,7 +78,7 @@ fun Application.configureProductsRouting() {
             }
         }
 
-        // Update a product
+        
         put("/products/{id}") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {
@@ -104,7 +104,7 @@ fun Application.configureProductsRouting() {
             }
         }
 
-        // Delete a product
+        
         delete("/products/{id}") {
             try {
                 val username = call.request.headers["X-User-ID"] ?: run {

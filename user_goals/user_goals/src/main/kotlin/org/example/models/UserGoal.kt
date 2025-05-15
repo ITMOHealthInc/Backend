@@ -9,10 +9,10 @@ data class UserGoal(
     val goal_type: GoalType,
     val activity_level: ActivityLevel,
     val calorie_goal: Int,
-    val water_goal: Int,  // in milliliters
+    val water_goal: Int,  
     val steps_goal: Int,
-    val proteins_goal: Int, // in grams
-    val fats_goal: Int, // in grams
-    val carbohydrates_goal: Int, // in grams
-    val weight_goal: Double // in kilograms
+    val proteins_goal: Int, 
+    val fats_goal: Int, 
+    val carbohydrates_goal: Int, 
+    val weight_goal: Double 
 ) 
