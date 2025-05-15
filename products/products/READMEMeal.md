@@ -501,4 +501,63 @@ curl -X GET "http://localhost:5022/meals/daily-summary?date=2024-05-15" \
 curl -X GET http://localhost:5022/meals/daily-summary \
   -H "X-User-ID: username"
 ```
+
+### Создание приема пищи с водой
+Создает новый прием пищи типа SNACK, содержащий только воду. Количество воды округляется до ближайшего значения, кратного 50.
+
+**Конечная точка:** `POST /meals/water`
+
+**Заголовки:**
+- `X-User-ID`: Имя пользователя аутентифицированного пользователя(только для тестов. В проде этот заголовок проставляется сам из токена)
+- `Content-Type`: application/json
+
+**Тело запроса:**
+```json
+{
+    "waterAmount": 250
+}
+```
+
+**Ответ (201 Created):**
+```json
+{
+    "id": 1,
+    "type": "SNACK",
+    "addedAt": "2024-05-16T10:30:00",
+    "username": "user123",
+    "products": [
+        {
+            "id": 5,
+            "name": "Вода",
+            "affiliation": "GENERAL",
+            "water": 250.0,
+            "mass": 250.0,
+            "fiber": 0.0,
+            "sugar": 0.0,
+            "saturatedFat": 0.0,
+            "salt": 0.0,
+            "kbzhu": {
+                "calories": 0.0,
+                "proteins": 0.0,
+                "fats": 0.0,
+                "carbohydrates": 0.0
+            }
+        }
+    ],
+    "recipes": []
+}
+```
+
+**Пример curl:**
+```bash
+curl -X POST http://localhost:5022/meals/water \
+  -H "X-User-ID: username" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "waterAmount": 250
+  }'
+```
+
+**Примечания:**
+- Входное значение waterAmount округляется до ближайшего числа, кратного 50
  

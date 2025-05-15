@@ -121,6 +121,6 @@ WITH RECURSIVE counter AS (
     FROM counter
     WHERE n < 45
 )
-INSERT INTO products (name, affiliation, water)
-SELECT 'Вода', 'GENERAL', water_count
+INSERT INTO products (name, affiliation, water, mass)
+SELECT 'Вода', 'GENERAL', water_count, water_count
 FROM counter;
