@@ -25,6 +25,17 @@ services:
     depends_on:
       - db
 
+  achievements:
+    build: ./achievements
+    container_name: achievements
+    env_file:
+      - .env
+    ports:
+      - "5023:5023"
+    depends_on:
+      - db
+      - products
+
   auth:
     build: ./auth
     container_name: auth
